@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Real-time, grounded web search with authoritative source citations
-**Current focus:** Phase 1 - Research
+**Current focus:** Phase 2 - Foundation (Research complete)
 
 ## Current Position
 
-Phase: 1 of 6 (Research)
-Plan: 0 of 1 in current phase
-Status: Ready to plan
-Last activity: 2026-02-03 — Roadmap revised (split Research/Foundation)
+Phase: 1 of 6 (Research) - COMPLETE
+Plan: 1 of 1 in current phase
+Status: Phase complete - ready for Phase 2
+Last activity: 2026-02-03 — Completed 01-01-PLAN.md (Research Investigations)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: ~45min
+- Total execution time: ~0.75 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-research | 1 | ~45min | ~45min |
 
 **Recent Trend:**
-- Last 5 plans: (none yet)
-- Trend: N/A
+- Last 5 plans: 01-01 (~45min)
+- Trend: N/A (first plan)
 
 *Updated after each plan completion*
 
@@ -44,7 +44,12 @@ Recent decisions affecting current work:
 
 - [Roadmap]: Research phase first to validate AUTH-01 and SEARCH-03 viability before implementation
 - [Roadmap]: 6 phases derived from requirement clustering, Research split from Foundation for focus
-- [Roadmap]: SEARCH-03 now conditional on RESEARCH-01 confirming API query transparency
+- [01-01]: AUTH-01 VIABLE - Gemini CLI auth works, Gemini 3 restriction is client-side only
+- [01-01]: SEARCH-03 VIABLE - API returns webSearchQueries in groundingMetadata
+- [01-01]: Use Gemini CLI credentials (lower ban risk than Antigravity)
+- [01-01]: Implement OAuth ourselves, no dependency on Gemini CLI installation
+- [01-01]: Token storage at ~/.config/google-search-mcp/ (separate from Gemini CLI)
+- [01-01]: GSD integration requires agent frontmatter modification (tool lists are HARD CONSTRAINTS)
 
 ### Pending Todos
 
@@ -52,14 +57,16 @@ Recent decisions affecting current work:
 
 ### Blockers/Concerns
 
-- RESEARCH-01 outcome determines AUTH-01 scope (may descope Gemini CLI auth if no grounded search support)
-- RESEARCH-01 outcome determines SEARCH-03 scope (may descope if API doesn't return search queries)
+- ~~RESEARCH-01 outcome determines AUTH-01 scope~~ RESOLVED: AUTH-01 viable
+- ~~RESEARCH-01 outcome determines SEARCH-03 scope~~ RESOLVED: SEARCH-03 viable
+
+**No active blockers.**
 
 ## Session Continuity
 
-Last session: 2026-02-03
-Stopped at: Roadmap revision complete
+Last session: 2026-02-03T18:17:30Z
+Stopped at: Completed 01-01-PLAN.md
 Resume file: None
 
 ---
-*Next: `/gsd:plan-phase 1`*
+*Next: `/gsd:plan-phase 2`*
