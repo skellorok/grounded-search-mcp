@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Real-time, grounded web search with authoritative source citations
-**Current focus:** Phase 3 - Authentication (Plan 1 of 3 complete)
+**Current focus:** Phase 3 - Authentication (Plan 2 of 3 complete)
 
 ## Current Position
 
 Phase: 3 of 6 (Authentication)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-03 — Completed 03-01-PLAN.md (OAuth Infrastructure)
+Last activity: 2026-02-03 — Completed 03-02-PLAN.md (Auth Tool MCP Integration)
 
-Progress: [███░░░░░░░] 30%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~21min
-- Total execution time: ~1.05 hours
+- Total plans completed: 4
+- Average duration: ~24min
+- Total execution time: ~1.6 hours
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [███░░░░░░░] 30%
 |-------|-------|-------|----------|
 | 01-research | 1 | ~45min | ~45min |
 | 02-foundation | 1 | ~6min | ~6min |
-| 03-authentication | 1 | ~12min | ~12min |
+| 03-authentication | 2 | ~43min | ~21.5min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~45min), 02-01 (~6min), 03-01 (~12min)
-- Trend: Stable (auth plan efficient execution)
+- Last 5 plans: 01-01 (~45min), 02-01 (~6min), 03-01 (~12min), 03-02 (~31min)
+- Trend: Stable (auth tool took longer due to human verification checkpoint)
 
 *Updated after each plan completion*
 
@@ -59,10 +59,13 @@ Recent decisions affecting current work:
 - [03-01]: XDG-compliant token storage via env-paths
 - [03-01]: Atomic writes with temp file + rename pattern
 - [03-01]: prompt=consent forces refresh token grant on re-auth
+- [03-02]: Flag-based interface for auth tool (--login, --status, --logout, --default-provider, --code)
+- [03-02]: Active auth flows tracked in memory with 5-minute timeout
+- [03-02]: Email masking format: jo***@gm***.com
 
 ### Pending Todos
 
-1. **Add auth provider selection flag** (config) - Design decision for Phase 3/5: support single provider, config-time selection, or runtime flag for Gemini CLI vs Antigravity
+1. ~~**Add auth provider selection flag**~~ RESOLVED: Implemented in 03-02 with --login <provider> flag
 
 ### Blockers/Concerns
 
@@ -73,9 +76,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-03T20:44:22Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-02-03T21:18:57Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
 
 ---
-*Next: Execute 03-02-PLAN.md (Auth Tool MCP Integration)*
+*Next: Execute 03-03-PLAN.md (Token Refresh Flow)*
