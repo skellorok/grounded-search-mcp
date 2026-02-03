@@ -438,6 +438,24 @@ Is Gemini CLI web-search using googleSearch grounding tool?
 
 **Current answer:** YES (confirmed via `defaultModelConfigs.js` line 154)
 
+### Model Availability Decision Tree (NEW - 2026-02-03)
+
+```
+Is Gemini 3 restriction client-side or server-side?
+├── CLIENT-SIDE (confirmed)
+│   ├── Model aliases (auto, pro, flash) → controlled by previewFeaturesEnabled flag
+│   └── Direct model names (gemini-3-flash) → PASS THROUGH UNCHANGED
+│
+What this means for us:
+├── Can use Gemini CLI auth
+├── Specify gemini-3-flash directly in API requests
+└── No special "enable preview" flag needed at API level
+```
+
+**Evidence:** `models.js` lines 36-62 - `resolveModel()` has `default: return requestedModel` case that passes direct model names through unchanged.
+
+**Implication:** Best of both worlds - lower risk Gemini CLI credentials + Gemini 3 model access.
+
 ### SEARCH-03 Decision Tree
 
 ```
