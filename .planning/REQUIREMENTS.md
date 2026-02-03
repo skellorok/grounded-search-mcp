@@ -24,10 +24,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Research/Investigation
 
-- [ ] **RESEARCH-01**: Investigate Gemini CLI vs Antigravity: (a) different API endpoints? (b) does Gemini CLI have grounded search? (c) does API return actual search queries used? If no grounded search, deprioritize AUTH-01. If no query transparency, deprioritize SEARCH-03
-- [ ] **RESEARCH-02**: Evaluate OpenCode plugin grounded search implementation for code reuse
-- [ ] **RESEARCH-03**: Investigate how GSD agents call WebSearch/WebFetch to determine integration approach
-- [ ] **RESEARCH-04**: Investigate ~/.claude/agents/ workaround for plugin subagent tool access bug (GitHub #13605) — moving agent definitions out of plugins may restore MCP tool access
+- [x] **RESEARCH-01**: Investigate Gemini CLI vs Antigravity: (a) different API endpoints? (b) does Gemini CLI have grounded search? (c) does API return actual search queries used? If no grounded search, deprioritize AUTH-01. If no query transparency, deprioritize SEARCH-03 — **RESOLVED: AUTH-01 and SEARCH-03 both viable**
+- [x] **RESEARCH-02**: Evaluate OpenCode plugin grounded search implementation for code reuse — **RESOLVED: HIGH reuse for constants/search pattern, MEDIUM for OAuth**
+- [x] **RESEARCH-03**: Investigate how GSD agents call WebSearch/WebFetch to determine integration approach — **RESOLVED: Must modify agent frontmatter (tool lists are HARD CONSTRAINTS)**
+- [x] **RESEARCH-04**: Investigate ~/.claude/agents/ workaround for plugin subagent tool access bug (GitHub #13605) — **RESOLVED: Not applicable, GSD agents already have MCP access**
 
 ### Configuration
 
@@ -63,10 +63,10 @@ Explicitly excluded. Documented to prevent scope creep.
 
 ## Contingencies
 
-| Requirement | Condition | Action if False |
-|-------------|-----------|-----------------|
-| AUTH-01 (Gemini CLI auth) | RESEARCH-01 confirms Gemini CLI API supports grounded search | Descope AUTH-01, use Antigravity auth only |
-| SEARCH-03 (query transparency) | RESEARCH-01 confirms API returns actual search queries used | Descope SEARCH-03 from v1 |
+| Requirement | Condition | Action if False | Status |
+|-------------|-----------|-----------------|--------|
+| AUTH-01 (Gemini CLI auth) | RESEARCH-01 confirms Gemini CLI API supports grounded search | Descope AUTH-01, use Antigravity auth only | **RESOLVED: Viable** |
+| SEARCH-03 (query transparency) | RESEARCH-01 confirms API returns actual search queries used | Descope SEARCH-03 from v1 | **RESOLVED: Viable** |
 
 ## Traceability
 
@@ -74,10 +74,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RESEARCH-01 | Phase 1 | Pending |
-| RESEARCH-02 | Phase 1 | Pending |
-| RESEARCH-03 | Phase 1 | Pending |
-| RESEARCH-04 | Phase 1 | Pending |
+| RESEARCH-01 | Phase 1 | Complete |
+| RESEARCH-02 | Phase 1 | Complete |
+| RESEARCH-03 | Phase 1 | Complete |
+| RESEARCH-04 | Phase 1 | Complete |
 | AUTH-01 | Phase 3 | Pending (conditional on RESEARCH-01) |
 | AUTH-02 | Phase 3 | Pending |
 | AUTH-03 | Phase 3 | Pending |
