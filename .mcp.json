@@ -1,0 +1,8 @@
+{
+	"mcpServers": {
+		"gemini-search": {
+			"command": "node",
+			"args": ["build/index.js"]
+		}
+	}
+}
