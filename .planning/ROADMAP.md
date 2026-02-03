@@ -52,19 +52,19 @@ Plans:
 ### Phase 3: Authentication
 **Goal**: Users can authenticate and maintain persistent access to the Antigravity API
 **Depends on**: Phase 2 (server skeleton exists)
-**Requirements**: AUTH-01 (conditional), AUTH-02, AUTH-03, AUTH-04, ERROR-01, ERROR-02
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, ERROR-01, ERROR-02
 **Success Criteria** (what must be TRUE):
-  1. User can authenticate via device code flow or loopback flow (method depends on RESEARCH-01)
+  1. User can authenticate via device code flow with manual code entry (both Gemini CLI and Antigravity providers)
   2. Authentication tokens persist across MCP server restarts (user authenticates once)
   3. User can trigger re-authentication when tokens expire or become invalid
   4. Unauthenticated state shows clear error message with instructions
   5. Unauthenticated state offers option to start auth flow
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: OAuth device code flow (AUTH-02 Antigravity, AUTH-01 if viable)
-- [ ] 03-02: Token persistence and refresh (AUTH-03, AUTH-04)
-- [ ] 03-03: Auth error states (ERROR-01, ERROR-02)
+- [ ] 03-01-PLAN.md - Core auth infrastructure (providers, token storage, PKCE device flow)
+- [ ] 03-02-PLAN.md - Auth tool with flag-based interface (login, status, logout, default-provider)
+- [ ] 03-03-PLAN.md - Token refresh with retry/deduplication, search tool auth checks
 
 ### Phase 4: Core Search
 **Goal**: Users can perform grounded searches and receive results with citations
@@ -127,5 +127,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 ---
 *Roadmap created: 2026-02-03*
-*Last revised: 2026-02-03 (split Research/Foundation into separate phases)*
+*Last revised: 2026-02-03 (Phase 3 planning complete - 3 plans in 2 waves)*
 *Total v1 requirements: 17 (17 mapped, 0 orphaned)*
