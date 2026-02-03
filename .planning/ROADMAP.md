@@ -44,10 +44,10 @@ Plans:
   2. Placeholder `grounded_search` tool appears in tool list
   3. Placeholder tool returns mock response when invoked
   4. Server follows MCP protocol correctly (JSON-RPC, schema validation)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: MCP server foundation with placeholder tool
+- [ ] 02-01-PLAN.md - Initialize project scaffold, implement MCP server with placeholder tools, verify integration
 
 ### Phase 3: Authentication
 **Goal**: Users can authenticate and maintain persistent access to the Antigravity API
