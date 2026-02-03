@@ -27,6 +27,15 @@ import type { AuthFlowState, ProviderName, ProviderTokens, TokenFile } from './t
 // Re-export types for external use
 export type { AuthFlowState, ProviderName, ProviderTokens, TokenFile } from './types.js';
 
+// Re-export token refresh functions and constants
+export {
+	getValidAccessToken,
+	isTokenExpired,
+	refreshAccessToken,
+	ACCESS_TOKEN_BUFFER_MS,
+	MAX_REFRESH_RETRIES,
+} from './refresh.js';
+
 /**
  * Mask an email address for display
  *
