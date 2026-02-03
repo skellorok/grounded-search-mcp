@@ -15,6 +15,9 @@ key-files:
     - ~/.nvm/versions/node/v20.20.0/lib/node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core/dist/src/tools/web-search.js
     - ~/.cache/opencode/node_modules/opencode-antigravity-auth/dist/src/constants.js
     - ~/.cache/opencode/node_modules/opencode-antigravity-auth/dist/src/plugin/search.js
+    - ~/.claude/agents/gsd-phase-researcher.md
+    - ~/.claude/agents/gsd-project-researcher.md
+    - ~/.claude/commands/gsd/research-phase.md
 decisions:
   - AUTH-01: viable - Gemini CLI auth works, can request gemini-3 models directly
   - SEARCH-03: viable - API returns groundingMetadata.webSearchQueries
@@ -160,7 +163,103 @@ Three auth plugins exist for OpenCode:
 - Already use MCP tools: `mcp__context7__*` in tool lists
 - New MCP tool just needs to be added to `.mcp.json`
 
-**Integration syntax:** `mcp__google-grounded-search__grounded_search`
+**Integration syntax:** `mcp__gemini-search__grounded_search` (or `mcp__gemini-search__*` for wildcard)
+
+#### Agent Tool Declaration Pattern
+
+Both `gsd-phase-researcher.md` and `gsd-project-researcher.md` use identical frontmatter:
+
+```yaml
+---
+name: gsd-phase-researcher
+description: [description]
+tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch, mcp__context7__*
+color: cyan
+---
+```
+
+**Key observations:**
+- Tools are comma-separated in a single `tools:` field
+- MCP tools use format: `mcp__<server>__<tool>` or `mcp__<server>__*` for wildcards
+- Wildcard support confirmed: `mcp__context7__*` is actively used
+
+#### CONTEXT.md Integration Questions Answered
+
+**Q1: Can we inject tool preference at invocation time?**
+
+**NO** - Tool preferences are declared in agent frontmatter, not at invocation.
+
+However, the orchestrator prompt CAN influence tool usage through instructions. The agent reads its own file for tools declaration (line 4 of agent file), orchestrator cannot modify this dynamically.
+
+**Workaround options:**
+1. Modify agent file - Add MCP tool to the `tools:` line
+2. Prompt guidance - Include "Prefer `mcp__gemini-search__grounded_search` over WebSearch for grounded queries"
+3. Create variant agent - `gsd-phase-researcher-grounded.md` with MCP tool
+
+**Q2: How do agents modify behavior (prompts vs tool instructions vs hooks)?**
+
+**Prompts only.** No hooks exist.
+
+Execution flow:
+1. Orchestrator reads agent file for `tools:` field
+2. Orchestrator constructs prompt with context
+3. Agent receives prompt + available tools
+4. Agent behavior guided entirely by role definition (body content) and orchestrator prompt
+
+Tool instructions in agent body are guidance, not constraints.
+
+**Q3: Does tool produce RESEARCH.md or agent consumes output?**
+
+**Agent produces RESEARCH.md. Tool provides data that agent formats.**
+
+Flow: Tool (grounded_search) -> returns JSON/data -> Agent parses -> Agent writes RESEARCH.md
+
+From `gsd-phase-researcher.md`:
+- Agent writes to `.planning/phases/XX-name/{phase}-RESEARCH.md`
+- Agent uses tools to gather information
+- Agent synthesizes findings into RESEARCH.md format
+- Tool output is consumed by agent, not directly written to files
+
+**Q4: What happens if CONTEXT.md exists when researcher runs?**
+
+**CONTEXT.md constrains research scope.** (gsd-phase-researcher.md lines 27-36)
+
+The researcher agent:
+1. Reads CONTEXT.md at step 1 (mandatory)
+2. Uses `## Decisions` section as locked constraints - research THESE, not alternatives
+3. Uses `## Claude's Discretion` section for freedom areas
+4. Ignores `## Deferred Ideas` completely
+
+This means if CONTEXT.md specifies "use library X", researcher researches X deeply and doesn't explore alternatives.
+
+#### GSD Integration Approach
+
+**Step 1: Add MCP to Claude Code configuration**
+```json
+// ~/.mcp.json
+{
+  "mcpServers": {
+    "gemini-search": {
+      "command": "node",
+      "args": ["/path/to/gemini-search-mcp/dist/index.js"],
+      "env": {}
+    }
+  }
+}
+```
+
+**Step 2: Update agent tool declarations (optional but recommended)**
+```yaml
+tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch, mcp__context7__*, mcp__gemini-search__*
+```
+
+**Step 3: Add prompt guidance in orchestrators (optional enhancement)**
+Add to research orchestrator prompts:
+```
+When performing web research, prefer `mcp__gemini-search__grounded_search` for queries requiring authoritative, grounded sources with citations.
+```
+
+**Recommendation:** Supplement WebSearch rather than replace - allows fallback if MCP has issues.
 
 ## Decisions Made
 
@@ -285,6 +384,9 @@ Antigravity uses `gemini-3-flash` directly in search requests with no preview fl
 - `~/.nvm/.../gemini-cli-core/dist/src/config/defaultModelConfigs.js` - Web search config
 - `~/.cache/opencode/.../opencode-antigravity-auth/dist/src/constants.js` - Search model
 - `~/.cache/opencode/.../opencode-antigravity-auth/dist/src/plugin/search.js` - Two-stage pattern
+- `~/.claude/agents/gsd-phase-researcher.md` - Agent tool declaration, CONTEXT.md handling
+- `~/.claude/agents/gsd-project-researcher.md` - Agent tool declaration pattern
+- `~/.claude/commands/gsd/research-phase.md` - Orchestrator invocation flow
 
 ### Secondary (npm registry)
 - opencode-gemini-cli-oauth@1.3.0
