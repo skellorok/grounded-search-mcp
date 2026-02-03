@@ -1,8 +1,7 @@
 /**
  * API client module for gemini-search-mcp
  *
- * Re-exports constants and request building functions.
- * Actual search execution will be added in Plan 04-02.
+ * Re-exports constants, request building, response parsing, and search execution.
  */
 
 // Constants and utilities
@@ -34,3 +33,20 @@ export {
 	type SearchRequestOptions,
 	wrapProviderRequest,
 } from './request.js';
+
+// Response parsing and formatting
+export {
+	type ApiResponse,
+	formatErrorResponse,
+	formatSearchResult,
+	parseSearchResponse,
+	type SearchResult,
+	type Source,
+} from './response.js';
+
+// Search execution
+export {
+	executeGroundedSearch,
+	searchWithFallback,
+	type SearchOptions,
+} from './search.js';
