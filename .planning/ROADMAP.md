@@ -75,11 +75,11 @@ Plans:
   2. Search results include text response with source citations (URLs and titles)
   3. Search results include the actual queries Google used for transparency (if RESEARCH-01 confirms API support)
   4. Two-stage orchestration guarantees grounding occurs (not passive model decision)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: API client with two-stage orchestration
-- [ ] 04-02: Response parsing and citation formatting
+- [ ] 04-01-PLAN.md — API constants and request building (endpoints, headers, two-stage orchestration)
+- [ ] 04-02-PLAN.md — Response parsing and tool integration (groundingMetadata extraction, markdown formatting)
 
 ### Phase 5: Configuration
 **Goal**: Users can customize search behavior via parameters and preferences
