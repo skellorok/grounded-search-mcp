@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Real-time, grounded web search with authoritative source citations
-**Current focus:** Phase 3 - Authentication COMPLETE
+**Current focus:** Phase 4 - Core Search IN PROGRESS
 
 ## Current Position
 
-Phase: 3 of 6 (Authentication) - COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase complete - ready for Phase 4
-Last activity: 2026-02-03 — Completed 03-03-PLAN.md (Token Refresh Flow)
+Phase: 4 of 6 (Core Search)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-03 - Completed 04-01-PLAN.md (API Client Infrastructure)
 
-Progress: [█████░░░░░] 50%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~19min
-- Total execution time: ~1.6 hours
+- Total plans completed: 6
+- Average duration: ~17min
+- Total execution time: ~1.7 hours
 
 **By Phase:**
 
@@ -30,10 +30,11 @@ Progress: [█████░░░░░] 50%
 | 01-research | 1 | ~45min | ~45min |
 | 02-foundation | 1 | ~6min | ~6min |
 | 03-authentication | 3 | ~46min | ~15min |
+| 04-core-search | 1 | ~5min | ~5min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (~6min), 03-01 (~12min), 03-02 (~31min), 03-03 (~3min)
-- Trend: Fast (03-03 was straightforward implementation)
+- Last 5 plans: 03-01 (~12min), 03-02 (~31min), 03-03 (~3min), 04-01 (~5min)
+- Trend: Fast (04-01 was straightforward infrastructure)
 
 *Updated after each plan completion*
 
@@ -66,6 +67,10 @@ Recent decisions affecting current work:
 - [03-03]: Max 3 refresh retries with exponential backoff (1s/2s/4s)
 - [03-03]: Promise deduplication prevents concurrent refresh race conditions
 - [03-03]: invalid_grant errors immediately throw (no retry)
+- [04-01]: Two-stage orchestration uses ONLY googleSearch tool to force grounding
+- [04-01]: Header randomization per request for both providers
+- [04-01]: Default model: gemini-3-flash, thinking: low
+- [04-01]: Antigravity default project ID: rising-fact-p41fc
 
 ### Pending Todos
 
@@ -80,9 +85,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-03T21:24:24Z
-Stopped at: Completed 03-03-PLAN.md (Phase 3 complete)
+Last session: 2026-02-03T22:33:23Z
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None
 
 ---
-*Next: `/gsd:discuss-phase 4` or `/gsd:plan-phase 4`*
+*Next: `/gsd:execute-plan 04-02`*
