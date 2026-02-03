@@ -24,7 +24,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Research/Investigation
 
-- [ ] **RESEARCH-01**: Investigate Gemini CLI vs Antigravity: (a) different API endpoints? (b) does Gemini CLI have grounded search? If no grounded search, deprioritize AUTH-01
+- [ ] **RESEARCH-01**: Investigate Gemini CLI vs Antigravity: (a) different API endpoints? (b) does Gemini CLI have grounded search? (c) does API return actual search queries used? If no grounded search, deprioritize AUTH-01. If no query transparency, deprioritize SEARCH-03
 - [ ] **RESEARCH-02**: Evaluate OpenCode plugin grounded search implementation for code reuse
 - [ ] **RESEARCH-03**: Investigate how GSD agents call WebSearch/WebFetch to determine integration approach
 - [ ] **RESEARCH-04**: Investigate ~/.claude/agents/ workaround for plugin subagent tool access bug (GitHub #13605) — moving agent definitions out of plugins may restore MCP tool access
@@ -66,6 +66,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | Requirement | Condition | Action if False |
 |-------------|-----------|-----------------|
 | AUTH-01 (Gemini CLI auth) | RESEARCH-01 confirms Gemini CLI API supports grounded search | Descope AUTH-01, use Antigravity auth only |
+| SEARCH-03 (query transparency) | RESEARCH-01 confirms API returns actual search queries used | Descope SEARCH-03 from v1 |
 
 ## Traceability
 
@@ -73,29 +74,29 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| SEARCH-01 | TBD | Pending |
-| SEARCH-02 | TBD | Pending |
-| SEARCH-03 | TBD | Pending |
-| SEARCH-04 | TBD | Pending |
-| SEARCH-05 | TBD | Pending |
-| RESEARCH-01 | TBD | Pending |
-| RESEARCH-02 | TBD | Pending |
-| RESEARCH-03 | TBD | Pending |
-| RESEARCH-04 | TBD | Pending |
-| CONFIG-01 | TBD | Pending |
-| CONFIG-02 | TBD | Pending |
-| ERROR-01 | TBD | Pending |
-| ERROR-02 | TBD | Pending |
+| RESEARCH-01 | Phase 1 | Pending |
+| RESEARCH-02 | Phase 1 | Pending |
+| RESEARCH-03 | Phase 1 | Pending |
+| RESEARCH-04 | Phase 1 | Pending |
+| AUTH-01 | Phase 3 | Pending (conditional on RESEARCH-01) |
+| AUTH-02 | Phase 3 | Pending |
+| AUTH-03 | Phase 3 | Pending |
+| AUTH-04 | Phase 3 | Pending |
+| ERROR-01 | Phase 3 | Pending |
+| ERROR-02 | Phase 3 | Pending |
+| SEARCH-01 | Phase 4 | Pending |
+| SEARCH-02 | Phase 4 | Pending |
+| SEARCH-03 | Phase 4 | Pending (conditional on RESEARCH-01) |
+| SEARCH-04 | Phase 5 | Pending |
+| SEARCH-05 | Phase 5 | Pending |
+| CONFIG-01 | Phase 5 | Pending |
+| CONFIG-02 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 17 total
-- Mapped to phases: 0
-- Unmapped: 17 (roadmap pending)
+- Mapped to phases: 17
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 after definition*
+*Last updated: 2026-02-03 after roadmap revision (phase renumbering, SEARCH-03 conditional)*
