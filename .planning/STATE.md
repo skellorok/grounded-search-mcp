@@ -48,7 +48,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+1. **Add auth provider selection flag** (config) - Design decision for Phase 3/5: support single provider, config-time selection, or runtime flag for Gemini CLI vs Antigravity
 
 ### Blockers/Concerns
 
