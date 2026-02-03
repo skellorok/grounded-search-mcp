@@ -55,6 +55,284 @@ The primary research sources are local installations rather than web searches: O
 | `antigravity/oauth.js` | PKCE flow, loopback server, token exchange | MEDIUM - MCP context differs |
 | `plugin/token.js` | Token refresh logic | MEDIUM - simplify for MCP |
 
+---
+
+#### Detailed Source Code Analysis (Validated 2026-02-03)
+
+##### 1. constants.js Analysis
+
+**File:** `~/.cache/opencode/node_modules/opencode-antigravity-auth/dist/src/constants.js`
+**Reuse Classification:** HIGH - can copy directly with minimal changes
+
+**Key Constants Identified:**
+
+| Constant | Value | Reuse Notes |
+|----------|-------|-------------|
+| `ANTIGRAVITY_CLIENT_ID` | `1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com` | Direct copy |
+| `ANTIGRAVITY_CLIENT_SECRET` | `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` | Direct copy |
+| `ANTIGRAVITY_SCOPES` | 5 scopes including `cloud-platform`, `userinfo.email`, `userinfo.profile`, `cclog`, `experimentsandconfigs` | Direct copy |
+| `ANTIGRAVITY_REDIRECT_URI` | `http://localhost:51121/oauth-callback` | May need port flexibility |
+| `ANTIGRAVITY_VERSION` | `1.15.8` | **CRITICAL** - must stay in sync |
+
+**Endpoints (lines 28-52):**
+```javascript
+ANTIGRAVITY_ENDPOINT_DAILY = "https://daily-cloudcode-pa.sandbox.googleapis.com"
+ANTIGRAVITY_ENDPOINT_AUTOPUSH = "https://autopush-cloudcode-pa.sandbox.googleapis.com"
+ANTIGRAVITY_ENDPOINT_PROD = "https://cloudcode-pa.googleapis.com"
+ANTIGRAVITY_ENDPOINT = ANTIGRAVITY_ENDPOINT_DAILY  // Default to sandbox
+```
+
+**Headers (lines 83-92):**
+```javascript
+ANTIGRAVITY_HEADERS = {
+  "User-Agent": `Mozilla/5.0 ... Antigravity/${ANTIGRAVITY_VERSION} Chrome/138.0.7204.235 ...`,
+  "X-Goog-Api-Client": "google-cloud-sdk vscode_cloudshelleditor/0.1",
+  "Client-Metadata": '{"ideType":"IDE_UNSPECIFIED","platform":"PLATFORM_UNSPECIFIED","pluginType":"GEMINI"}'
+}
+```
+
+**Reusable Functions:**
+- `getRandomizedHeaders(style)` (lines 116-129): Rotates User-Agent and X-Goog-Api-Client to avoid rate limits
+  - Supports "gemini-cli" and "antigravity" styles
+  - HIGH reuse - copy directly
+
+**System Instructions (lines 144-227):**
+- `CLAUDE_TOOL_SYSTEM_INSTRUCTION`: Tool hallucination prevention prompt
+- `SEARCH_SYSTEM_INSTRUCTION`: Web search agent prompt
+- `ANTIGRAVITY_SYSTEM_INSTRUCTION`: Full Antigravity agent prompt
+- HIGH reuse - copy `SEARCH_SYSTEM_INSTRUCTION` for our MCP tool
+
+**Search Constants (lines 192-204):**
+```javascript
+SEARCH_MODEL = "gemini-3-flash"
+SEARCH_THINKING_BUDGET_DEEP = 16384
+SEARCH_THINKING_BUDGET_FAST = 4096
+SEARCH_TIMEOUT_MS = 60000
+```
+
+##### 2. search.js Analysis (Two-Stage Orchestration)
+
+**File:** `~/.cache/opencode/node_modules/opencode-antigravity-auth/dist/src/plugin/search.js`
+**Reuse Classification:** HIGH - pattern directly adaptable
+
+**Two-Stage Pattern Structure:**
+
+**Stage 1: Build dedicated search request (lines 118-149)**
+```javascript
+// Only grounding tools, NO function declarations
+const tools = [];
+tools.push({ googleSearch: {} });
+if (urls && urls.length > 0) {
+  tools.push({ urlContext: {} });
+}
+
+const requestPayload = {
+  systemInstruction: { parts: [{ text: SEARCH_SYSTEM_INSTRUCTION }] },
+  contents: [{ role: "user", parts: [{ text: prompt }] }],
+  tools,  // Only googleSearch/urlContext
+  generationConfig: {
+    thinkingConfig: {
+      thinkingLevel: thinking ? "high" : "low",
+      includeThoughts: false
+    }
+  }
+};
+```
+
+**Stage 2: Wrap in Antigravity format (lines 151-160)**
+```javascript
+const wrappedBody = {
+  project: projectId,
+  model: SEARCH_MODEL,
+  userAgent: "antigravity",
+  requestId: generateRequestId(),
+  request: { ...requestPayload, sessionId: getSessionId() }
+};
+```
+
+**API Call (lines 162-178):**
+- Endpoint: `${ANTIGRAVITY_ENDPOINT}/v1internal:generateContent` (non-streaming)
+- Auth: `Bearer ${accessToken}`
+- Content-Type: `application/json`
+
+**Response Parsing - parseSearchResponse() (lines 51-108):**
+
+Key extraction points:
+```javascript
+// Text content (lines 72-78)
+result.text = candidate.content.parts
+  .map((p) => p.text ?? "")
+  .filter(Boolean)
+  .join("\n");
+
+// Web search queries (lines 80-84) - THIS IS SEARCH-03
+if (candidate.groundingMetadata) {
+  if (gm.webSearchQueries) {
+    result.searchQueries = gm.webSearchQueries;
+  }
+}
+
+// Source citations (lines 85-94)
+if (gm.groundingChunks) {
+  for (const chunk of gm.groundingChunks) {
+    if (chunk.web?.uri && chunk.web?.title) {
+      result.sources.push({ title: chunk.web.title, url: chunk.web.uri });
+    }
+  }
+}
+
+// URL retrieval status (lines 97-106)
+if (candidate.urlContextMetadata?.url_metadata) {
+  for (const meta of candidate.urlContextMetadata.url_metadata) {
+    result.urlsRetrieved.push({
+      url: meta.retrieved_url,
+      status: meta.url_retrieval_status ?? "UNKNOWN"
+    });
+  }
+}
+```
+
+**Output Format - formatSearchResult() (lines 23-49):**
+Returns Markdown with sections:
+- `## Search Results` + text
+- `### Sources` + linked citations
+- `### URLs Retrieved` + status indicators
+- `### Search Queries Used` + quoted queries
+
+##### 3. oauth.js Analysis
+
+**File:** `~/.cache/opencode/node_modules/opencode-antigravity-auth/dist/src/antigravity/oauth.js`
+**Reuse Classification:** MEDIUM - pattern reusable, implementation needs MCP adaptation
+
+**PKCE Flow Implementation:**
+
+1. **Authorization URL Building - authorizeAntigravity() (lines 31-48):**
+   ```javascript
+   const pkce = await generatePKCE();  // Uses @openauthjs/openauth/pkce
+   const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+   url.searchParams.set("client_id", ANTIGRAVITY_CLIENT_ID);
+   url.searchParams.set("response_type", "code");
+   url.searchParams.set("redirect_uri", ANTIGRAVITY_REDIRECT_URI);
+   url.searchParams.set("scope", ANTIGRAVITY_SCOPES.join(" "));
+   url.searchParams.set("code_challenge", pkce.challenge);
+   url.searchParams.set("code_challenge_method", "S256");
+   url.searchParams.set("state", encodeState({ verifier: pkce.verifier, projectId }));
+   url.searchParams.set("access_type", "offline");
+   url.searchParams.set("prompt", "consent");
+   ```
+
+2. **State Encoding (lines 9-27):**
+   - Encodes PKCE verifier + projectId in base64url
+   - Uses `Buffer.from().toString("base64url")` for encoding
+   - Decodes with normalization: `-` → `+`, `_` → `/`, padding
+
+3. **Token Exchange - exchangeAntigravity() (lines 112-173):**
+   - Endpoint: `https://oauth2.googleapis.com/token`
+   - Content-Type: `application/x-www-form-urlencoded;charset=UTF-8`
+   - Includes PKCE `code_verifier` in body
+   - Fetches user info from `https://www.googleapis.com/oauth2/v1/userinfo`
+   - Resolves project ID via `fetchProjectID()` if not in state
+
+4. **Project ID Resolution - fetchProjectID() (lines 60-108):**
+   - Calls `/v1internal:loadCodeAssist` on all endpoints
+   - Extracts `cloudaicompanionProject` from response
+   - Falls back through endpoint list: prod → daily → autopush
+
+**Loopback Server (server.js - separate file):**
+- Port: 51121 (from `ANTIGRAVITY_REDIRECT_URI`)
+- Handles path: `/oauth-callback`
+- Environment detection: OrbStack, WSL, SSH/Remote
+- Bind address selection: `127.0.0.1` vs `0.0.0.0`
+- 5-minute timeout by default
+
+**MCP Adaptation Needed:**
+- MCP servers cannot spawn HTTP servers directly (stdio transport)
+- Need alternative: External auth server OR MCP resource for auth URL + polling
+- Token storage: MCP servers persist across invocations, can store in memory/file
+
+##### 4. token.js Analysis
+
+**File:** `~/.cache/opencode/node_modules/opencode-antigravity-auth/dist/src/plugin/token.js`
+**Reuse Classification:** MEDIUM - simplify for MCP context
+
+**Token Refresh Logic - refreshAccessToken() (lines 59-127):**
+
+```javascript
+// 1. Parse stored refresh token
+const parts = parseRefreshParts(auth.refresh);
+// Format: "refreshToken|projectId|managedProjectId"
+
+// 2. Call Google token endpoint
+const response = await fetch("https://oauth2.googleapis.com/token", {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: new URLSearchParams({
+    grant_type: "refresh_token",
+    refresh_token: parts.refreshToken,
+    client_id: ANTIGRAVITY_CLIENT_ID,
+    client_secret: ANTIGRAVITY_CLIENT_SECRET
+  })
+});
+
+// 3. Handle revocation (invalid_grant error)
+if (code === "invalid_grant") {
+  log.warn("Google revoked the stored refresh token - reauthentication required");
+  invalidateProjectContextCache(auth.refresh);
+  clearCachedAuth(auth.refresh);
+}
+
+// 4. Update stored auth with new access token
+const updatedAuth = {
+  ...auth,
+  access: payload.access_token,
+  expires: calculateTokenExpiry(startTime, payload.expires_in),
+  refresh: formatRefreshParts(refreshedParts)
+};
+storeCachedAuth(updatedAuth);
+```
+
+**Helper Functions (from auth.js):**
+
+```javascript
+// Token expiry with 60-second buffer
+function accessTokenExpired(auth) {
+  return auth.expires <= Date.now() + ACCESS_TOKEN_EXPIRY_BUFFER_MS;
+}
+
+// Calculate absolute expiry from duration
+function calculateTokenExpiry(requestTimeMs, expiresInSeconds) {
+  return requestTimeMs + seconds * 1000;
+}
+
+// Refresh token format: "token|projectId|managedProjectId"
+function parseRefreshParts(refresh) {
+  const [refreshToken, projectId, managedProjectId] = refresh.split("|");
+  return { refreshToken, projectId, managedProjectId };
+}
+```
+
+**Error Handling:**
+- `AntigravityTokenRefreshError` class with structured error info
+- Graceful degradation: returns undefined on unexpected errors
+
+---
+
+**Reuse Strategy Summary:**
+
+| Component | Reuse | Action |
+|-----------|-------|--------|
+| `constants.js` - all constants | HIGH | Copy entire file, remove unused |
+| `constants.js` - `getRandomizedHeaders()` | HIGH | Copy directly |
+| `search.js` - two-stage pattern | HIGH | Adapt: same structure, MCP tool wrapper |
+| `search.js` - `parseSearchResponse()` | HIGH | Copy directly |
+| `search.js` - `formatSearchResult()` | HIGH | Copy, may modify output format |
+| `oauth.js` - PKCE URL building | MEDIUM | Copy, replace loopback with MCP pattern |
+| `oauth.js` - token exchange | MEDIUM | Copy, adapt callback handling |
+| `oauth.js` - project ID resolution | MEDIUM | Copy directly |
+| `server.js` - loopback server | LOW | Reference only - need MCP alternative |
+| `token.js` - refresh logic | MEDIUM | Simplify, MCP can manage single token |
+| `auth.js` - helpers | HIGH | Copy directly |
+
 **Key Patterns Already Documented:**
 - Two-stage orchestration in `custom_research/2026-02-03-antigravity-api-mcp-integration-deep-dive.md`
 - OAuth comparison in `custom_research/2026-02-03-oauth-auth-research.md`
