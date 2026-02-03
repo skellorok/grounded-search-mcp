@@ -16,9 +16,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Search
 
-- [ ] **SEARCH-01**: MCP exposes `grounded_search` tool that performs Google-grounded search
-- [ ] **SEARCH-02**: Search returns text response with source citations (URLs, titles)
-- [ ] **SEARCH-03**: Search returns the actual queries Google used (for transparency)
+- [x] **SEARCH-01**: MCP exposes `grounded_search` tool that performs Google-grounded search
+- [x] **SEARCH-02**: Search returns text response with source citations (URLs, titles)
+- [x] **SEARCH-03**: Search returns the actual queries Google used (for transparency)
 - [ ] **SEARCH-04**: User can specify model via tool parameter (gemini-3-flash, gemini-3-pro, etc.)
 - [ ] **SEARCH-05**: User can specify thinking level via tool parameter
 
@@ -84,9 +84,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04 | Phase 3 | Complete |
 | ERROR-01 | Phase 3 | Complete |
 | ERROR-02 | Phase 3 | Complete |
-| SEARCH-01 | Phase 4 | Pending |
-| SEARCH-02 | Phase 4 | Pending |
-| SEARCH-03 | Phase 4 | Pending (conditional on RESEARCH-01) |
+| SEARCH-01 | Phase 4 | Complete |
+| SEARCH-02 | Phase 4 | Complete |
+| SEARCH-03 | Phase 4 | Complete |
 | SEARCH-04 | Phase 5 | Pending |
 | SEARCH-05 | Phase 5 | Pending |
 | CONFIG-01 | Phase 5 | Pending |
@@ -99,4 +99,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 (Phase 3 complete - AUTH-01-04, ERROR-01-02 satisfied)*
+*Last updated: 2026-02-03 (Phase 4 complete - SEARCH-01, SEARCH-02, SEARCH-03 satisfied)*

@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Research** - Validate technical assumptions and inform downstream decisions
 - [x] **Phase 2: Foundation** - Establish MCP server skeleton with placeholder tool
 - [x] **Phase 3: Authentication** - OAuth flows with token persistence and error states
-- [ ] **Phase 4: Core Search** - Grounded search with citations and transparency
+- [x] **Phase 4: Core Search** - Grounded search with citations and transparency
 - [ ] **Phase 5: Configuration** - Model selection, thinking levels, and user preferences
 - [ ] **Phase 6: Polish & Validation** - Edge cases, error recovery, production readiness
 
@@ -78,8 +78,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — API constants and request building (endpoints, headers, two-stage orchestration)
-- [ ] 04-02-PLAN.md — Response parsing and tool integration (groundingMetadata extraction, markdown formatting)
+- [x] 04-01-PLAN.md — API constants and request building (endpoints, headers, two-stage orchestration)
+- [x] 04-02-PLAN.md — Response parsing and tool integration (groundingMetadata extraction, markdown formatting)
 
 ### Phase 5: Configuration
 **Goal**: Users can customize search behavior via parameters and preferences
@@ -121,11 +121,11 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Research | 1/1 | Complete | 2026-02-03 |
 | 2. Foundation | 1/1 | Complete | 2026-02-03 |
 | 3. Authentication | 3/3 | Complete | 2026-02-03 |
-| 4. Core Search | 0/2 | Not started | - |
+| 4. Core Search | 2/2 | Complete | 2026-02-03 |
 | 5. Configuration | 0/2 | Not started | - |
 | 6. Polish & Validation | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last revised: 2026-02-03 (Phase 3 execution complete - all auth requirements satisfied)*
+*Last revised: 2026-02-03 (Phase 4 execution complete - core search with citations working)*
 *Total v1 requirements: 17 (17 mapped, 0 orphaned)*
