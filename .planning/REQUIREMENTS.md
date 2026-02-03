@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can authenticate via Gemini CLI device code flow (enter code from browser)
-- [ ] **AUTH-02**: User can authenticate via Antigravity loopback flow with paste-back fallback
-- [ ] **AUTH-03**: Authentication persists across MCP server restarts
-- [ ] **AUTH-04**: User can trigger re-authentication when tokens expire
+- [x] **AUTH-01**: User can authenticate via Gemini CLI device code flow (enter code from browser)
+- [x] **AUTH-02**: User can authenticate via Antigravity loopback flow with paste-back fallback
+- [x] **AUTH-03**: Authentication persists across MCP server restarts
+- [x] **AUTH-04**: User can trigger re-authentication when tokens expire
 
 ### Search
 
@@ -36,8 +36,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Error Handling
 
-- [ ] **ERROR-01**: Unauthenticated state returns clear error with auth instructions
-- [ ] **ERROR-02**: Unauthenticated state offers option to start auth flow
+- [x] **ERROR-01**: Unauthenticated state returns clear error with auth instructions
+- [x] **ERROR-02**: Unauthenticated state offers option to start auth flow
 
 ## v2 Requirements
 
@@ -78,12 +78,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RESEARCH-02 | Phase 1 | Complete |
 | RESEARCH-03 | Phase 1 | Complete |
 | RESEARCH-04 | Phase 1 | Complete |
-| AUTH-01 | Phase 3 | Pending (conditional on RESEARCH-01) |
-| AUTH-02 | Phase 3 | Pending |
-| AUTH-03 | Phase 3 | Pending |
-| AUTH-04 | Phase 3 | Pending |
-| ERROR-01 | Phase 3 | Pending |
-| ERROR-02 | Phase 3 | Pending |
+| AUTH-01 | Phase 3 | Complete |
+| AUTH-02 | Phase 3 | Complete |
+| AUTH-03 | Phase 3 | Complete |
+| AUTH-04 | Phase 3 | Complete |
+| ERROR-01 | Phase 3 | Complete |
+| ERROR-02 | Phase 3 | Complete |
 | SEARCH-01 | Phase 4 | Pending |
 | SEARCH-02 | Phase 4 | Pending |
 | SEARCH-03 | Phase 4 | Pending (conditional on RESEARCH-01) |
@@ -99,4 +99,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 after roadmap revision (phase renumbering, SEARCH-03 conditional)*
+*Last updated: 2026-02-03 (Phase 3 complete - AUTH-01-04, ERROR-01-02 satisfied)*

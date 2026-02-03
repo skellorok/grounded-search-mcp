@@ -85,4 +85,4 @@ Stopped at: Completed 03-03-PLAN.md (Phase 3 complete)
 Resume file: None
 
 ---
-*Next: Execute Phase 4 - Search Implementation (Gemini API integration)*
+*Next: `/gsd:discuss-phase 4` or `/gsd:plan-phase 4`*

@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Research** - Validate technical assumptions and inform downstream decisions
 - [x] **Phase 2: Foundation** - Establish MCP server skeleton with placeholder tool
-- [ ] **Phase 3: Authentication** - OAuth flows with token persistence and error states
+- [x] **Phase 3: Authentication** - OAuth flows with token persistence and error states
 - [ ] **Phase 4: Core Search** - Grounded search with citations and transparency
 - [ ] **Phase 5: Configuration** - Model selection, thinking levels, and user preferences
 - [ ] **Phase 6: Polish & Validation** - Edge cases, error recovery, production readiness
@@ -62,9 +62,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md - Core auth infrastructure (providers, token storage, PKCE device flow)
-- [ ] 03-02-PLAN.md - Auth tool with flag-based interface (login, status, logout, default-provider)
-- [ ] 03-03-PLAN.md - Token refresh with retry/deduplication, search tool auth checks
+- [x] 03-01-PLAN.md - Core auth infrastructure (providers, token storage, PKCE device flow)
+- [x] 03-02-PLAN.md - Auth tool with flag-based interface (login, status, logout, default-provider)
+- [x] 03-03-PLAN.md - Token refresh with retry/deduplication, search tool auth checks
 
 ### Phase 4: Core Search
 **Goal**: Users can perform grounded searches and receive results with citations
@@ -120,12 +120,12 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 1. Research | 1/1 | Complete | 2026-02-03 |
 | 2. Foundation | 1/1 | Complete | 2026-02-03 |
-| 3. Authentication | 0/3 | Not started | - |
+| 3. Authentication | 3/3 | Complete | 2026-02-03 |
 | 4. Core Search | 0/2 | Not started | - |
 | 5. Configuration | 0/2 | Not started | - |
 | 6. Polish & Validation | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last revised: 2026-02-03 (Phase 3 planning complete - 3 plans in 2 waves)*
+*Last revised: 2026-02-03 (Phase 3 execution complete - all auth requirements satisfied)*
 *Total v1 requirements: 17 (17 mapped, 0 orphaned)*
