@@ -1,0 +1,38 @@
+{
+	"name": "gemini-search-mcp",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "MCP server providing Google Search grounding via Gemini API",
+	"bin": {
+		"gemini-search-mcp": "./build/index.js"
+	},
+	"scripts": {
+		"dev": "tsx watch src/index.ts",
+		"build": "tsc && chmod +x build/index.js",
+		"start": "node build/index.js",
+		"test": "vitest",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"format": "biome format --write .",
+		"typecheck": "tsc --noEmit",
+		"prepare": "husky",
+		"inspector": "npx @modelcontextprotocol/inspector node build/index.js"
+	},
+	"files": ["build"],
+	"engines": {
+		"node": ">=18"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.25.3",
+		"zod": "^3.25.30"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.15.29",
+		"husky": "^9.1.7",
+		"lint-staged": "^15.5.1",
+		"tsx": "^4.20.3",
+		"typescript": "^5.8.3",
+		"vitest": "^3.1.3"
+	}
+}
