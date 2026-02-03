@@ -13,7 +13,7 @@ This roadmap delivers an MCP server that provides Google Search grounding via th
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Research** - Validate technical assumptions and inform downstream decisions
-- [ ] **Phase 2: Foundation** - Establish MCP server skeleton with placeholder tool
+- [x] **Phase 2: Foundation** - Establish MCP server skeleton with placeholder tool
 - [ ] **Phase 3: Authentication** - OAuth flows with token persistence and error states
 - [ ] **Phase 4: Core Search** - Grounded search with citations and transparency
 - [ ] **Phase 5: Configuration** - Model selection, thinking levels, and user preferences
@@ -47,7 +47,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md - Initialize project scaffold, implement MCP server with placeholder tools, verify integration
+- [x] 02-01-PLAN.md - Initialize project scaffold, implement MCP server with placeholder tools, verify integration
 
 ### Phase 3: Authentication
 **Goal**: Users can authenticate and maintain persistent access to the Antigravity API
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Research | 1/1 | Complete | 2026-02-03 |
-| 2. Foundation | 0/1 | Not started | - |
+| 2. Foundation | 1/1 | Complete | 2026-02-03 |
 | 3. Authentication | 0/3 | Not started | - |
 | 4. Core Search | 0/2 | Not started | - |
 | 5. Configuration | 0/2 | Not started | - |
