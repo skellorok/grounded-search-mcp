@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 
 ## Current Position
 
-Phase: 5 of 6 (Configuration) - COMPLETE
+Phase: 5 of 6 (Configuration) - VERIFIED
 Plan: 1 of 1 in current phase
-Status: Phase 5 complete, ready for Phase 6 (Polish)
-Last activity: 2026-02-04 — Completed 05-01-PLAN.md (configuration persistence + response metadata)
+Status: Phase 5 UAT complete (7/7 passed), ready for Phase 6 (Polish)
+Last activity: 2026-02-04 — Phase 5 UAT complete, fixed Antigravity User-Agent bug
 
 Progress: [█████████░] 89%
 
@@ -87,6 +87,8 @@ Recent decisions affecting current work:
 - [05-01]: Atomic writes with temp file + rename (mirrors token-storage)
 - [05-01]: Config tool array parameter for --set (supports multiple key=value)
 - [05-01]: Request Details section after Sources, before Search Queries Used
+- [05-UAT]: Antigravity User-Agent must use full browser-like format (short format causes 404)
+- [05-UAT]: Antigravity project ID resolved via loadCodeAssist API (not hardcoded)
 
 ### Pending Todos
 
@@ -102,7 +104,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Completed 05-01-PLAN.md (configuration persistence + response metadata)
+Stopped at: Phase 5 UAT complete (7/7 passed)
 Resume file: None
 
 ---
