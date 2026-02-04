@@ -10,6 +10,7 @@ import type { ProviderName } from '../auth/types.js';
 import { loadConfig } from '../config/index.js';
 import {
 	ANTIGRAVITY_ENDPOINT,
+	ANTIGRAVITY_HEADERS,
 	GEMINI_CLI_ENDPOINT,
 	PROVIDER_MODELS,
 	SEARCH_TIMEOUT_MS,
@@ -135,11 +136,12 @@ async function getAntigravityProjectId(accessToken: string): Promise<string | nu
 			const response = await fetch(url, {
 				method: 'POST',
 				headers: {
-					Authorization: `Bearer ${accessToken}`,
 					'Content-Type': 'application/json',
-					// Use Gemini CLI style headers for loadCodeAssist (matches OpenCode)
+					Authorization: `Bearer ${accessToken}`,
+					// Use Gemini CLI style headers for loadCodeAssist (matches OpenCode project.js)
 					'User-Agent': 'google-api-nodejs-client/9.15.1',
 					'X-Goog-Api-Client': 'google-cloud-sdk vscode_cloudshelleditor/0.1',
+					'Client-Metadata': ANTIGRAVITY_HEADERS['Client-Metadata'],
 				},
 				body: JSON.stringify(requestBody),
 				signal: AbortSignal.timeout(10000),
@@ -231,6 +233,10 @@ async function executeGroundedSearchInternal(
 	const endpoint = endpointOverride ?? providerConfig.endpoint;
 	const model = PROVIDER_MODELS[provider];
 
+	// Antigravity: Use static ANTIGRAVITY_HEADERS (matches OpenCode's search.js)
+	// Gemini CLI: Use existing randomized headers (different API, was working fine)
+	const headers = provider === 'antigravity' ? ANTIGRAVITY_HEADERS : providerConfig.headers;
+
 	// Common metadata
 	const baseResult = {
 		provider,
@@ -284,9 +290,9 @@ Could not retrieve your Gemini project ID.
 		const response = await fetch(url, {
 			method: 'POST',
 			headers: {
+				...headers,
 				Authorization: `Bearer ${accessToken}`,
 				'Content-Type': 'application/json',
-				...providerConfig.headers,
 			},
 			body: JSON.stringify(requestBody),
 			signal: AbortSignal.timeout(SEARCH_TIMEOUT_MS),
