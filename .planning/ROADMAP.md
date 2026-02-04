@@ -97,7 +97,7 @@ Plans:
 - SEARCH-05 (thinking level): Parameter already implemented in Phase 4. This phase adds persistence.
 
 Plans:
-- [ ] 05-01: Configuration persistence and response metadata
+- [ ] 05-01-PLAN.md - Config module, config tool, and response metadata integration
 
 ### Phase 6: Polish & Validation
 **Goal**: Production-ready MCP server with robust error handling and edge case coverage
