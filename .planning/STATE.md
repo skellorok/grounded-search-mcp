@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Real-time, grounded web search with authoritative source citations
-**Current focus:** Phase 4 - Core Search COMPLETE
+**Current focus:** Phase 5 - Configuration
 
 ## Current Position
 
-Phase: 4 of 6 (Core Search) - COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase complete - ready for Phase 5
-Last activity: 2026-02-03 — Completed Phase 4 (Core Search)
+Phase: 5 of 6 (Configuration) - IN PROGRESS
+Plan: 0 of 1 in current phase
+Status: Phase 5 scope revised, ready for planning
+Last activity: 2026-02-04 — Revised Phase 5 scope based on API constraints
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 78%
 
 ## Performance Metrics
 
@@ -78,6 +78,10 @@ Recent decisions affecting current work:
 - [04-UAT]: Antigravity as default provider, Gemini CLI as fallback
 - [04-UAT]: URL paste-back for Antigravity auth (loopback not feasible over SSH)
 - [04-UAT]: Removed early isAuthenticated checks - let getValidAccessToken() handle refresh
+- [04-post]: Single endpoint (daily sandbox only) - autopush/prod return 429 quota errors with Antigravity OAuth
+- [05-scope]: Model selection blocked by API - googleSearch only works on gemini-2.5-flash (Gemini CLI) and gemini-3-flash (Antigravity)
+- [05-scope]: Thinking parameter already implemented in Phase 4 - Phase 5 adds persistence only
+- [05-scope]: Phase 5 reduced to 1 plan (was 2) - configuration persistence + response metadata
 
 ### Pending Todos
 
@@ -93,8 +97,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Phase 4 complete - all UAT tests passing
+Stopped at: Phase 5 scope revised based on API constraint discovery
 Resume file: None
 
 ---
-*Next: `/gsd:discuss-phase 5` or `/gsd:plan-phase 5`*
+*Next: `/gsd:plan-phase 5` (scope is clear, discussion optional)*

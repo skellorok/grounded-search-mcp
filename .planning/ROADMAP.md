@@ -82,19 +82,22 @@ Plans:
 - [x] 04-02-PLAN.md — Response parsing and tool integration (groundingMetadata extraction, markdown formatting)
 
 ### Phase 5: Configuration
-**Goal**: Users can customize search behavior via parameters and preferences
+**Goal**: Users can persist search preferences across sessions
 **Depends on**: Phase 4 (configuration extends working search)
-**Requirements**: SEARCH-04, SEARCH-05, CONFIG-01, CONFIG-02
+**Requirements**: CONFIG-01, CONFIG-02 (SEARCH-04, SEARCH-05 partially satisfied - see notes)
 **Success Criteria** (what must be TRUE):
-  1. User can specify model via tool parameter (gemini-3-flash, gemini-3-pro, etc.)
-  2. User can specify thinking level via tool parameter
-  3. User can configure default model preference (persists across calls)
-  4. User can configure default thinking level (persists across calls)
-**Plans**: TBD
+  1. User can configure default provider preference (antigravity vs gemini) - persists
+  2. User can configure default thinking level (high/low/none) - persists
+  3. Configuration stored in XDG-compliant location (reuse auth token pattern)
+  4. Tool response includes provider/model metadata for transparency
+**Plans**: 1 plan
+
+**Scope notes:**
+- SEARCH-04 (model selection): Constrained by API - googleSearch only works on gemini-2.5-flash (Gemini CLI) and gemini-3-flash (Antigravity). User selects provider, which implies model.
+- SEARCH-05 (thinking level): Parameter already implemented in Phase 4. This phase adds persistence.
 
 Plans:
-- [ ] 05-01: Model and thinking level parameters
-- [ ] 05-02: Configuration persistence
+- [ ] 05-01: Configuration persistence and response metadata
 
 ### Phase 6: Polish & Validation
 **Goal**: Production-ready MCP server with robust error handling and edge case coverage
@@ -122,10 +125,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Foundation | 1/1 | Complete | 2026-02-03 |
 | 3. Authentication | 3/3 | Complete | 2026-02-03 |
 | 4. Core Search | 2/2 | Complete | 2026-02-03 |
-| 5. Configuration | 0/2 | Not started | - |
+| 5. Configuration | 0/1 | Not started | - |
 | 6. Polish & Validation | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last revised: 2026-02-03 (Phase 4 execution complete - core search with citations working)*
+*Last revised: 2026-02-04 (Phase 5 scope revised - model selection blocked by API, reduced to 1 plan)*
 *Total v1 requirements: 17 (17 mapped, 0 orphaned)*
