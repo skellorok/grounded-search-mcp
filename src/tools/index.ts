@@ -4,6 +4,7 @@
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerAuthTool } from './auth.js';
+import { registerConfigTool } from './config.js';
 import { registerSearchTool } from './search.js';
 
 /**
@@ -12,4 +13,5 @@ import { registerSearchTool } from './search.js';
 export function registerTools(server: McpServer): void {
 	registerSearchTool(server);
 	registerAuthTool(server);
+	registerConfigTool(server);
 }
