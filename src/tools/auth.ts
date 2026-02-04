@@ -203,17 +203,18 @@ Manage authentication for Google Search grounding.
 **Usage:**
 - auth --status: Show authentication status
 - auth --login: Start authentication (shows provider menu)
+- auth --login antigravity: Authenticate with Antigravity (recommended)
 - auth --login gemini: Authenticate with Gemini CLI
-- auth --login antigravity: Authenticate with Antigravity
-- auth --login gemini --code CODE: Complete authentication with code
-- auth --logout: Log out (shows provider menu)
-- auth --logout gemini: Log out of Gemini CLI
-- auth --logout both: Log out of all providers
-- auth --default-provider gemini: Set default provider
+- auth --login <provider> --code CODE: Complete authentication with code
+- auth --logout <provider|both>: Log out from provider(s)
+- auth --default-provider <provider>: Set default provider
 
 **Providers:**
-- **gemini**: Gemini CLI (recommended, lower risk)
-- **antigravity**: Antigravity/OpenCode (more scopes)`;
+- **antigravity** (default): Uses gemini-3-flash with thinking support
+- **gemini** (fallback): Uses gemini-2.5-flash without thinking
+
+**Note:** Antigravity is recommended for better search quality via thinking.
+Gemini CLI serves as a fallback when Antigravity is unavailable.`;
 }
 
 /**

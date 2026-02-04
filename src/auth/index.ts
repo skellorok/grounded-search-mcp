@@ -110,7 +110,7 @@ export async function isAuthenticated(provider?: ProviderName): Promise<boolean>
  */
 export async function getDefaultProvider(): Promise<ProviderName> {
 	const tokens = await loadTokens();
-	return tokens?.default_provider ?? 'gemini';
+	return tokens?.default_provider ?? 'antigravity';
 }
 
 /**
@@ -166,7 +166,7 @@ export async function getStatus(): Promise<AuthStatus> {
 	return {
 		gemini: getProviderStatus(tokens?.gemini),
 		antigravity: getProviderStatus(tokens?.antigravity),
-		defaultProvider: tokens?.default_provider ?? 'gemini',
+		defaultProvider: tokens?.default_provider ?? 'antigravity',
 	};
 }
 
@@ -303,7 +303,7 @@ export async function getValidToken(provider?: ProviderName): Promise<string | n
 	}
 
 	// Otherwise check default provider first, then any
-	const defaultProvider = tokens.default_provider ?? 'gemini';
+	const defaultProvider = tokens.default_provider ?? 'antigravity';
 	const defaultTokens = tokens[defaultProvider];
 	if (defaultTokens?.access_token && defaultTokens.expires_at > Date.now()) {
 		return defaultTokens.access_token;

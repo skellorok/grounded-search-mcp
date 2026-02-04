@@ -141,20 +141,56 @@ export const ANTIGRAVITY_CONFIG: ProviderApiConfig = {
 };
 
 // ============================================================================
-// MODEL AND THINKING DEFAULTS
+// PROVIDER-SPECIFIC MODEL CONFIGURATIONS
 // ============================================================================
 
 /**
- * Default model for search requests.
- * Must use gemini-2.5-flash for googleSearch tool support.
- * Gemini 3 models don't support the googleSearch grounding tool.
+ * Model configuration per provider.
+ *
+ * Antigravity: Uses gemini-3-flash with thinking support (high by default)
+ * Gemini CLI: Uses gemini-2.5-flash (only model with googleSearch support on this endpoint)
  */
-export const DEFAULT_MODEL = 'gemini-2.5-flash';
+export const PROVIDER_MODELS: Record<ProviderName, string> = {
+	antigravity: 'gemini-3-flash',
+	gemini: 'gemini-2.5-flash',
+};
+
+/**
+ * Thinking levels supported by Antigravity's gemini-3-flash
+ * 'none' disables thinking and uses basic generation config
+ */
+export type ThinkingLevel = 'high' | 'low' | 'none';
+
+/**
+ * Valid thinking levels for the API (excludes 'none')
+ */
+export type ApiThinkingLevel = 'high' | 'low';
+
+/**
+ * Default thinking level for Antigravity (matches OpenCode default)
+ */
+export const DEFAULT_THINKING_LEVEL: ApiThinkingLevel = 'high';
+
+/**
+ * Whether thinking is supported per provider
+ */
+export const PROVIDER_SUPPORTS_THINKING: Record<ProviderName, boolean> = {
+	antigravity: true,
+	gemini: false, // gemini-2.5-flash does not support thinkingConfig
+};
 
 /**
  * Timeout for search requests (60 seconds)
  */
 export const SEARCH_TIMEOUT_MS = 60000;
+
+/**
+ * Antigravity endpoint fallbacks (in order of preference)
+ */
+export const ANTIGRAVITY_ENDPOINT_FALLBACKS = [
+	'https://daily-cloudcode-pa.sandbox.googleapis.com',
+	'https://autopush-cloudcode-pa.sandbox.googleapis.com',
+];
 
 // ============================================================================
 // SYSTEM INSTRUCTION

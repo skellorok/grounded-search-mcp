@@ -9,10 +9,14 @@ import type { ProviderName } from '../auth/types.js';
 import {
 	ANTIGRAVITY_CONFIG,
 	ANTIGRAVITY_DEFAULT_PROJECT_ID,
-	DEFAULT_MODEL,
+	type ApiThinkingLevel,
+	DEFAULT_THINKING_LEVEL,
 	GEMINI_CLI_CONFIG,
+	PROVIDER_MODELS,
+	PROVIDER_SUPPORTS_THINKING,
 	type ProviderApiConfig,
 	SEARCH_SYSTEM_INSTRUCTION,
+	type ThinkingLevel,
 	generateRequestId,
 	generateSessionId,
 	getRandomizedHeaders,
@@ -28,11 +32,31 @@ import {
 export interface SearchRequestOptions {
 	/** The search query */
 	query: string;
+	/** Thinking level for Antigravity (ignored for Gemini CLI) */
+	thinking?: ThinkingLevel;
+}
+
+/**
+ * Generation config for providers that support thinking (Antigravity)
+ */
+interface ThinkingGenerationConfig {
+	thinkingConfig: {
+		thinkingLevel: 'high' | 'low';
+		includeThoughts: boolean;
+	};
+}
+
+/**
+ * Generation config for providers without thinking support (Gemini CLI)
+ */
+interface BasicGenerationConfig {
+	temperature: number;
+	topP: number;
 }
 
 /**
  * Core request payload structure (Stage 1)
- * Matches Gemini CLI web-search config: base + googleSearch tool
+ * Generation config varies by provider capability
  */
 interface SearchPayload {
 	systemInstruction: {
@@ -43,10 +67,7 @@ interface SearchPayload {
 		parts: Array<{ text: string }>;
 	}>;
 	tools: Array<{ googleSearch: Record<string, never> }>;
-	generationConfig: {
-		temperature: number;
-		topP: number;
-	};
+	generationConfig: ThinkingGenerationConfig | BasicGenerationConfig;
 }
 
 /**
@@ -95,10 +116,34 @@ export interface ProviderRequestConfig {
  * CRITICAL: tools array contains ONLY { googleSearch: {} }.
  * This forces the model to search - it cannot skip to training data.
  *
- * Uses Gemini CLI 'base' config: temperature=0, topP=1
+ * Generation config varies by provider:
+ * - Antigravity: thinkingConfig with thinkingLevel (high/low)
+ * - Gemini CLI: temperature=0, topP=1 (no thinking support)
  */
-function buildSearchPayload(options: SearchRequestOptions): SearchPayload {
-	const { query } = options;
+function buildSearchPayload(options: SearchRequestOptions, provider: ProviderName): SearchPayload {
+	const { query, thinking } = options;
+
+	// Determine generation config based on provider capability
+	let generationConfig: ThinkingGenerationConfig | BasicGenerationConfig;
+
+	if (PROVIDER_SUPPORTS_THINKING[provider] && thinking !== 'none') {
+		// Antigravity with thinking enabled: use thinking config
+		// thinking is 'high' | 'low' | undefined here (not 'none' due to condition)
+		const thinkingLevel: ApiThinkingLevel =
+			thinking === 'high' || thinking === 'low' ? thinking : DEFAULT_THINKING_LEVEL;
+		generationConfig = {
+			thinkingConfig: {
+				thinkingLevel,
+				includeThoughts: false,
+			},
+		};
+	} else {
+		// Gemini CLI or thinking=none: basic config without thinking
+		generationConfig = {
+			temperature: 0,
+			topP: 1,
+		};
+	}
 
 	return {
 		systemInstruction: {
@@ -112,11 +157,7 @@ function buildSearchPayload(options: SearchRequestOptions): SearchPayload {
 		],
 		// CRITICAL: Only googleSearch tool - forces grounding
 		tools: [{ googleSearch: {} }],
-		// Gemini CLI 'base' config values
-		generationConfig: {
-			temperature: 0,
-			topP: 1,
-		},
+		generationConfig,
 	};
 }
 
@@ -144,16 +185,22 @@ export function getProviderConfig(provider: ProviderName): ProviderRequestConfig
  * Both providers require wrapped format, but with different field names:
  * - Gemini CLI: { model, project, user_prompt_id, request: { ..., session_id } }
  * - Antigravity: { project, model, userAgent, requestId, request: { ..., sessionId } }
+ *
+ * Model is provider-specific:
+ * - Antigravity: gemini-3-flash (with thinking)
+ * - Gemini CLI: gemini-2.5-flash (only model with googleSearch support)
  */
 export function wrapProviderRequest(
 	payload: SearchPayload,
 	provider: ProviderName,
 	projectId?: string,
 ): WrappedRequest {
+	const model = PROVIDER_MODELS[provider];
+
 	if (provider === 'antigravity') {
 		return {
 			project: projectId ?? ANTIGRAVITY_DEFAULT_PROJECT_ID,
-			model: DEFAULT_MODEL,
+			model,
 			userAgent: 'antigravity',
 			requestId: generateRequestId(),
 			request: {
@@ -166,7 +213,7 @@ export function wrapProviderRequest(
 	// Gemini CLI: uses underscores (user_prompt_id, session_id)
 	// Project ID is retrieved via loadCodeAssist before calling this function
 	return {
-		model: DEFAULT_MODEL,
+		model,
 		project: projectId ?? '',
 		user_prompt_id: generateRequestId(),
 		request: {
@@ -181,7 +228,7 @@ export function wrapProviderRequest(
  *
  * Combines Stage 1 (payload building) and Stage 2 (provider wrapping).
  *
- * @param options - Search request options
+ * @param options - Search request options (query + optional thinking level)
  * @param provider - Target provider ('gemini' | 'antigravity')
  * @param projectId - Optional project ID (uses default if not provided)
  * @returns Complete request body ready for JSON.stringify
@@ -191,6 +238,6 @@ export function buildSearchRequest(
 	provider: ProviderName,
 	projectId?: string,
 ): WrappedRequest {
-	const payload = buildSearchPayload(options);
+	const payload = buildSearchPayload(options, provider);
 	return wrapProviderRequest(payload, provider, projectId);
 }

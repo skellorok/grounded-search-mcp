@@ -9,15 +9,19 @@ export {
 	ANTIGRAVITY_CONFIG,
 	ANTIGRAVITY_DEFAULT_PROJECT_ID,
 	ANTIGRAVITY_ENDPOINT,
+	ANTIGRAVITY_ENDPOINT_FALLBACKS,
 	ANTIGRAVITY_HEADERS,
 	ANTIGRAVITY_VERSION,
-	DEFAULT_MODEL,
+	DEFAULT_THINKING_LEVEL,
 	GEMINI_CLI_CONFIG,
 	GEMINI_CLI_ENDPOINT,
 	GEMINI_CLI_HEADERS,
 	type ProviderApiConfig,
+	PROVIDER_MODELS,
+	PROVIDER_SUPPORTS_THINKING,
 	SEARCH_SYSTEM_INSTRUCTION,
 	SEARCH_TIMEOUT_MS,
+	type ThinkingLevel,
 	generateRequestId,
 	generateSessionId,
 	getRandomizedHeaders,
@@ -43,4 +47,8 @@ export {
 } from './response.js';
 
 // Search execution
-export { executeGroundedSearch, searchWithFallback } from './search.js';
+export {
+	executeGroundedSearch,
+	searchWithFallback,
+	type SearchOptions,
+} from './search.js';

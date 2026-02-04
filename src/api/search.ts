@@ -7,14 +7,22 @@
 
 import { getDefaultProvider, getValidAccessToken } from '../auth/index.js';
 import type { ProviderName } from '../auth/types.js';
-import { GEMINI_CLI_ENDPOINT, SEARCH_TIMEOUT_MS } from './constants.js';
-import { buildSearchRequest, getProviderConfig } from './request.js';
+import {
+	ANTIGRAVITY_ENDPOINT_FALLBACKS,
+	GEMINI_CLI_ENDPOINT,
+	SEARCH_TIMEOUT_MS,
+	type ThinkingLevel,
+} from './constants.js';
+import { type SearchRequestOptions, buildSearchRequest, getProviderConfig } from './request.js';
 import {
 	type ApiResponse,
 	formatErrorResponse,
 	formatSearchResult,
 	parseSearchResponse,
 } from './response.js';
+
+// Re-export ThinkingLevel for use in search tool
+export type { ThinkingLevel } from './constants.js';
 
 // ============================================================================
 // PROJECT ID RESOLUTION (Gemini CLI)
@@ -81,7 +89,15 @@ async function getGeminiCliProjectId(accessToken: string): Promise<string | null
 // TYPES
 // ============================================================================
 
-// No additional options needed - gemini-2.5-flash uses fixed config
+/**
+ * Options for search execution
+ */
+export interface SearchOptions {
+	/** Search query string */
+	query: string;
+	/** Thinking level for Antigravity (ignored for Gemini CLI) */
+	thinking?: ThinkingLevel;
+}
 
 // ============================================================================
 // SEARCH EXECUTION
@@ -90,17 +106,20 @@ async function getGeminiCliProjectId(accessToken: string): Promise<string | null
 /**
  * Execute a grounded search request to the Gemini API.
  *
- * @param query - Search query string
+ * @param options - Search options (query + optional thinking level)
  * @param provider - Target provider ('gemini' | 'antigravity')
  * @param accessToken - Valid OAuth access token
+ * @param endpointOverride - Optional endpoint override (for fallback)
  * @returns Formatted markdown response (success or error)
  */
 export async function executeGroundedSearch(
-	query: string,
+	options: SearchOptions,
 	provider: ProviderName,
 	accessToken: string,
+	endpointOverride?: string,
 ): Promise<string> {
 	const config = getProviderConfig(provider);
+	const endpoint = endpointOverride ?? config.endpoint;
 
 	// Get project ID for Gemini CLI (required for API calls)
 	let projectId: string | undefined;
@@ -120,10 +139,14 @@ Could not retrieve your Gemini project ID.
 	}
 
 	// Build request body using two-stage orchestration
-	const requestBody = buildSearchRequest({ query }, provider, projectId);
+	const requestOptions: SearchRequestOptions = {
+		query: options.query,
+		thinking: options.thinking,
+	};
+	const requestBody = buildSearchRequest(requestOptions, provider, projectId);
 
 	// Build URL
-	const url = `${config.endpoint}/v1internal:generateContent`;
+	const url = `${endpoint}/v1internal:generateContent`;
 
 	try {
 		const response = await fetch(url, {
@@ -203,19 +226,56 @@ An unexpected error occurred.
 // ============================================================================
 
 /**
+ * Try Antigravity search with endpoint fallback.
+ * Tries each endpoint in ANTIGRAVITY_ENDPOINT_FALLBACKS until one works.
+ */
+async function tryAntigravityWithFallback(
+	options: SearchOptions,
+	accessToken: string,
+): Promise<{ success: boolean; result: string }> {
+	for (const endpoint of ANTIGRAVITY_ENDPOINT_FALLBACKS) {
+		const result = await executeGroundedSearch(options, 'antigravity', accessToken, endpoint);
+
+		// Check if this was a capacity/quota error that should trigger endpoint fallback
+		if (
+			result.includes('No capacity available') ||
+			result.includes('Resource has been exhausted') ||
+			result.includes('503') ||
+			result.includes('429')
+		) {
+			// Try next endpoint
+			continue;
+		}
+
+		return { success: true, result };
+	}
+
+	// All endpoints exhausted
+	return {
+		success: false,
+		result: `## Antigravity Unavailable
+
+All Antigravity endpoints are currently at capacity.
+
+**What to do:**
+- Try again in a few moments
+- Use Gemini CLI as fallback: \`auth --default-provider gemini\``,
+	};
+}
+
+/**
  * Execute a grounded search with provider fallback.
  *
- * Tries the default provider first. If it fails and another provider
- * is configured, tries that one. Returns informative error if both fail
- * or no providers are available.
+ * Tries the default provider first (Antigravity by default).
+ * For Antigravity, tries multiple endpoints before falling back to Gemini CLI.
  *
  * Uses getValidAccessToken() from auth module (handles refresh).
  *
- * @param query - Search query string
+ * @param options - Search options (query + optional thinking level)
  * @returns Formatted markdown response
  */
-export async function searchWithFallback(query: string): Promise<string> {
-	const providers: ProviderName[] = ['gemini', 'antigravity'];
+export async function searchWithFallback(options: SearchOptions): Promise<string> {
+	const providers: ProviderName[] = ['antigravity', 'gemini'];
 	const defaultProvider = await getDefaultProvider();
 
 	// Order providers: default first, then other
@@ -231,19 +291,27 @@ export async function searchWithFallback(query: string): Promise<string> {
 			// Get valid access token (handles refresh, returns null if not authenticated)
 			const accessToken = await getValidAccessToken(provider);
 
-			// Should not happen after isAuthenticated check, but handle gracefully
 			if (!accessToken) {
 				continue;
 			}
 
-			// Execute search
-			const result = await executeGroundedSearch(query, provider, accessToken);
+			// For Antigravity, try endpoint fallback
+			if (provider === 'antigravity') {
+				const { success, result } = await tryAntigravityWithFallback(options, accessToken);
+				if (success) {
+					return result;
+				}
+				lastError = result;
+				continue; // Try next provider (Gemini CLI)
+			}
+
+			// For Gemini CLI, single endpoint
+			const result = await executeGroundedSearch(options, provider, accessToken);
 
 			// Check if result is an auth error that should trigger fallback
-			// (Token may have been invalidated server-side after our check)
 			if (result.startsWith('## Authentication Error')) {
 				lastError = result;
-				continue; // Try next provider
+				continue;
 			}
 
 			return result;
@@ -256,7 +324,6 @@ ${message}
 
 **To fix:**
 Use \`auth --login ${provider}\` to re-authenticate.`;
-			// Continue to try next provider
 		}
 	}
 
@@ -270,9 +337,11 @@ Use \`auth --login ${provider}\` to re-authenticate.`;
 No authenticated providers are available for search.
 
 **To fix:**
-1. Run \`auth --login gemini\` or \`auth --login antigravity\`
+1. Run \`auth --login antigravity\` (recommended) or \`auth --login gemini\`
 2. Complete the authentication flow
 3. Try your search again
 
-**Note:** You need at least one authenticated provider to use grounded search.`;
+**Provider differences:**
+- **Antigravity**: gemini-3-flash with thinking (better quality)
+- **Gemini CLI**: gemini-2.5-flash without thinking (fallback)`;
 }

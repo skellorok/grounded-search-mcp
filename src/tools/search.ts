@@ -3,6 +3,10 @@
  *
  * Performs Google-grounded web searches via Gemini API.
  * Returns markdown-formatted results with sources and search queries.
+ *
+ * Provider differences:
+ * - Antigravity (default): gemini-3-flash with thinking support
+ * - Gemini CLI (fallback): gemini-2.5-flash without thinking
  */
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -20,11 +24,20 @@ export function registerSearchTool(server: McpServer): void {
 			description: 'Search the web using Google Search grounding via Gemini API',
 			inputSchema: {
 				query: z.string().min(1).max(1000).describe('Search query'),
+				thinking: z
+					.enum(['high', 'low', 'none'])
+					.optional()
+					.describe(
+						'Thinking level for Antigravity provider (default: high). Ignored for Gemini CLI.',
+					),
 			},
 		},
 		async (args) => {
 			// Execute search with fallback (handles token refresh and auth errors internally)
-			const result = await searchWithFallback(args.query);
+			const result = await searchWithFallback({
+				query: args.query,
+				thinking: args.thinking,
+			});
 
 			// Determine if result is an error based on heading
 			const isError =
@@ -34,7 +47,8 @@ export function registerSearchTool(server: McpServer): void {
 				result.startsWith('## No Providers') ||
 				result.startsWith('## Network Error') ||
 				result.startsWith('## Search Timeout') ||
-				result.startsWith('## Not Authenticated');
+				result.startsWith('## Not Authenticated') ||
+				result.startsWith('## Antigravity Unavailable');
 
 			return {
 				content: [{ type: 'text', text: result }],
