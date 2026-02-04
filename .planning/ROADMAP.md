@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Authentication** - OAuth flows with token persistence and error states
 - [x] **Phase 4: Core Search** - Grounded search with citations and transparency
 - [x] **Phase 5: Configuration** - Model selection, thinking levels, and user preferences
-- [ ] **Phase 6: Polish & Validation** - Edge cases, error recovery, production readiness
+- [x] **Phase 6: Polish & Validation** - Edge cases, error recovery, production readiness
 
 ## Phase Details
 
@@ -113,7 +113,7 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md - Validation test suite (Vitest tests for refresh, config, error handling)
-- [ ] 06-02-PLAN.md - Documentation and release preparation (README, WebSearch comparison, GSD guide, license)
+- [x] 06-02-PLAN.md - Documentation and release preparation (README, WebSearch comparison, GSD guide, license)
 
 ## Progress
 
@@ -127,9 +127,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Authentication | 3/3 | Complete | 2026-02-03 |
 | 4. Core Search | 2/2 | Complete | 2026-02-03 |
 | 5. Configuration | 1/1 | Complete | 2026-02-04 |
-| 6. Polish & Validation | 1/2 | In progress | - |
+| 6. Polish & Validation | 2/2 | Complete | 2026-02-04 |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last revised: 2026-02-04 (06-01 complete)*
+*Last revised: 2026-02-04 (Phase 6 complete - MILESTONE COMPLETE)*
 *Total v1 requirements: 17 (17 mapped, 0 orphaned)*
