@@ -112,7 +112,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md - Validation test suite (Vitest tests for refresh, config, error handling)
+- [x] 06-01-PLAN.md - Validation test suite (Vitest tests for refresh, config, error handling)
 - [ ] 06-02-PLAN.md - Documentation and release preparation (README, WebSearch comparison, GSD guide, license)
 
 ## Progress
@@ -127,9 +127,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Authentication | 3/3 | Complete | 2026-02-03 |
 | 4. Core Search | 2/2 | Complete | 2026-02-03 |
 | 5. Configuration | 1/1 | Complete | 2026-02-04 |
-| 6. Polish & Validation | 0/2 | Not started | - |
+| 6. Polish & Validation | 1/2 | In progress | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last revised: 2026-02-04 (Phase 5 complete)*
+*Last revised: 2026-02-04 (06-01 complete)*
 *Total v1 requirements: 17 (17 mapped, 0 orphaned)*

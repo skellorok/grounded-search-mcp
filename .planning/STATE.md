@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 
 ## Current Position
 
-Phase: 5 of 6 (Configuration) - VERIFIED
-Plan: 1 of 1 in current phase
-Status: Phase 5 UAT complete (7/7 passed), ready for Phase 6 (Polish)
-Last activity: 2026-02-04 — Phase 5 UAT complete, fixed Antigravity User-Agent bug
+Phase: 6 of 6 (Polish & Validation)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-04 — Completed 06-01-PLAN.md (Validation test suite)
 
-Progress: [█████████░] 89%
+Progress: [█████████░] 95%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: ~14min
-- Total execution time: ~1.9 hours
+- Total plans completed: 9
+- Average duration: ~13min
+- Total execution time: ~2.0 hours
 
 **By Phase:**
 
@@ -32,9 +32,10 @@ Progress: [█████████░] 89%
 | 03-authentication | 3 | ~46min | ~15min |
 | 04-core-search | 2 | ~8min | ~4min |
 | 05-configuration | 1 | ~10min | ~10min |
+| 06-polish-validation | 1 | ~3min | ~3min |
 
 **Recent Trend:**
-- Last 5 plans: 03-03 (~3min), 04-01 (~5min), 04-02 (~3min), 05-01 (~10min)
+- Last 5 plans: 04-01 (~5min), 04-02 (~3min), 05-01 (~10min), 06-01 (~3min)
 - Trend: Consistently fast execution
 
 *Updated after each plan completion*
@@ -89,6 +90,8 @@ Recent decisions affecting current work:
 - [05-01]: Request Details section after Sources, before Search Queries Used
 - [05-UAT]: Antigravity User-Agent must use full browser-like format (short format causes 404)
 - [05-UAT]: Antigravity project ID resolved via loadCodeAssist API (not hardcoded)
+- [06-01]: vi.resetModules() required for refresh deduplication tests (singleton state isolation)
+- [06-01]: vi.doMock() used for dynamic mock behavior in isolated tests
 
 ### Pending Todos
 
@@ -104,8 +107,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Phase 5 UAT complete (7/7 passed)
+Stopped at: Completed 06-01-PLAN.md (Validation test suite)
 Resume file: None
 
 ---
-*Next: Phase 6 - Polish (final phase)*
+*Next: Execute 06-02-PLAN.md - Documentation and release preparation*
