@@ -29,6 +29,22 @@ export interface SearchResult {
 }
 
 /**
+ * Metadata about the request for response transparency
+ */
+export interface RequestMetadata {
+	/** Provider used for this request */
+	provider: ProviderName;
+	/** Model used for this request */
+	model: string;
+	/** Response time in ms (only when verbose=true in config) */
+	responseTime?: number;
+	/** Whether fallback provider was used */
+	fallbackUsed?: boolean;
+	/** Thinking level used */
+	thinkingLevel?: 'high' | 'low' | 'none';
+}
+
+/**
  * Inner response structure (inside the 'response' wrapper)
  */
 interface InnerResponse {
@@ -128,6 +144,40 @@ function extractDomain(url: string): string {
 }
 
 /**
+ * Get display name for a provider.
+ */
+function getProviderDisplayName(provider: ProviderName): string {
+	return provider === 'antigravity' ? 'Antigravity' : 'Gemini CLI';
+}
+
+/**
+ * Format request metadata as markdown section.
+ *
+ * Always includes: Provider, Model
+ * Conditionally includes: "Fallback provider used" if fallbackUsed=true
+ * Conditionally includes: Response time if provided
+ */
+export function formatRequestDetails(metadata: RequestMetadata): string {
+	const lines: string[] = ['### Request Details', ''];
+	lines.push(`- **Provider:** ${getProviderDisplayName(metadata.provider)}`);
+	lines.push(`- **Model:** ${metadata.model}`);
+
+	if (metadata.thinkingLevel && metadata.thinkingLevel !== 'none') {
+		lines.push(`- **Thinking:** ${metadata.thinkingLevel}`);
+	}
+
+	if (metadata.fallbackUsed) {
+		lines.push('- **Note:** Fallback provider used');
+	}
+
+	if (metadata.responseTime !== undefined) {
+		lines.push(`- **Response time:** ${metadata.responseTime}ms`);
+	}
+
+	return lines.join('\n');
+}
+
+/**
  * Format a SearchResult as markdown.
  *
  * Format:
@@ -140,6 +190,10 @@ function extractDomain(url: string): string {
  * - [Title](url) (domain.com)
  * ...
  *
+ * ### Request Details (if metadata provided)
+ * - Provider: ...
+ * - Model: ...
+ *
  * ### Search Queries Used
  * - "query 1"
  * - "query 2"
@@ -147,7 +201,7 @@ function extractDomain(url: string): string {
  *
  * Sections are omitted if empty.
  */
-export function formatSearchResult(result: SearchResult): string {
+export function formatSearchResult(result: SearchResult, metadata?: RequestMetadata): string {
 	const sections: string[] = [];
 
 	// Search Results section (always included, even if empty)
@@ -161,6 +215,11 @@ export function formatSearchResult(result: SearchResult): string {
 			const domain = extractDomain(source.url);
 			sections.push(`- [${source.title}](${source.url}) (${domain})`);
 		}
+	}
+
+	// Request Details section (if metadata provided)
+	if (metadata) {
+		sections.push(`\n${formatRequestDetails(metadata)}`);
 	}
 
 	// Search Queries Used section (only if queries exist)

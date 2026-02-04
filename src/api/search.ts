@@ -7,15 +7,18 @@
 
 import { getDefaultProvider, getValidAccessToken } from '../auth/index.js';
 import type { ProviderName } from '../auth/types.js';
+import { loadConfig } from '../config/index.js';
 import {
 	ANTIGRAVITY_ENDPOINT,
 	GEMINI_CLI_ENDPOINT,
+	PROVIDER_MODELS,
 	SEARCH_TIMEOUT_MS,
 	type ThinkingLevel,
 } from './constants.js';
 import { type SearchRequestOptions, buildSearchRequest, getProviderConfig } from './request.js';
 import {
 	type ApiResponse,
+	type RequestMetadata,
 	formatErrorResponse,
 	formatSearchResult,
 	parseSearchResponse,
@@ -99,6 +102,24 @@ export interface SearchOptions {
 	thinking?: ThinkingLevel;
 }
 
+/**
+ * Internal result type with metadata for response formatting
+ */
+interface SearchResultWithMetadata {
+	/** Formatted markdown response */
+	result: string;
+	/** Whether this was a successful search (not an error) */
+	success: boolean;
+	/** Provider used */
+	provider: ProviderName;
+	/** Model used */
+	model: string;
+	/** Thinking level used */
+	thinkingLevel?: ThinkingLevel;
+	/** Response time in ms */
+	responseTime?: number;
+}
+
 // ============================================================================
 // SEARCH EXECUTION
 // ============================================================================
@@ -110,30 +131,44 @@ export interface SearchOptions {
  * @param provider - Target provider ('gemini' | 'antigravity')
  * @param accessToken - Valid OAuth access token
  * @param endpointOverride - Optional endpoint override (for fallback)
- * @returns Formatted markdown response (success or error)
+ * @param trackTiming - Whether to track response time
+ * @returns Search result with metadata
  */
-export async function executeGroundedSearch(
+async function executeGroundedSearchInternal(
 	options: SearchOptions,
 	provider: ProviderName,
 	accessToken: string,
 	endpointOverride?: string,
-): Promise<string> {
-	const config = getProviderConfig(provider);
-	const endpoint = endpointOverride ?? config.endpoint;
+	trackTiming = false,
+): Promise<SearchResultWithMetadata> {
+	const providerConfig = getProviderConfig(provider);
+	const endpoint = endpointOverride ?? providerConfig.endpoint;
+	const model = PROVIDER_MODELS[provider];
+
+	// Common metadata
+	const baseResult = {
+		provider,
+		model,
+		thinkingLevel: options.thinking,
+	};
 
 	// Get project ID for Gemini CLI (required for API calls)
 	let projectId: string | undefined;
 	if (provider === 'gemini') {
 		const resolvedProjectId = await getGeminiCliProjectId(accessToken);
 		if (!resolvedProjectId) {
-			return `## Project Setup Required
+			return {
+				...baseResult,
+				success: false,
+				result: `## Project Setup Required
 
 Could not retrieve your Gemini project ID.
 
 **To fix:**
 1. Ensure you have a valid Google account with Gemini access
 2. Try re-authenticating with \`auth --login gemini\`
-3. If you're using a Workspace account, set GOOGLE_CLOUD_PROJECT env var`;
+3. If you're using a Workspace account, set GOOGLE_CLOUD_PROJECT env var`,
+			};
 		}
 		projectId = resolvedProjectId;
 	}
@@ -148,22 +183,31 @@ Could not retrieve your Gemini project ID.
 	// Build URL
 	const url = `${endpoint}/v1internal:generateContent`;
 
+	const startTime = trackTiming ? Date.now() : 0;
+
 	try {
 		const response = await fetch(url, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 				'Content-Type': 'application/json',
-				...config.headers,
+				...providerConfig.headers,
 			},
 			body: JSON.stringify(requestBody),
 			signal: AbortSignal.timeout(SEARCH_TIMEOUT_MS),
 		});
 
+		const responseTime = trackTiming ? Date.now() - startTime : undefined;
+
 		// Handle HTTP errors
 		if (!response.ok) {
 			const errorText = await response.text().catch(() => '');
-			return formatErrorResponse(response.status, errorText, provider);
+			return {
+				...baseResult,
+				success: false,
+				result: formatErrorResponse(response.status, errorText, provider),
+				responseTime,
+			};
 		}
 
 		// Parse successful response
@@ -171,44 +215,69 @@ Could not retrieve your Gemini project ID.
 
 		// Check for API-level errors in response body
 		if (data.error) {
-			return formatErrorResponse(
-				data.error.code ?? 500,
-				data.error.message ?? 'Unknown API error',
-				provider,
-			);
+			return {
+				...baseResult,
+				success: false,
+				result: formatErrorResponse(
+					data.error.code ?? 500,
+					data.error.message ?? 'Unknown API error',
+					provider,
+				),
+				responseTime,
+			};
 		}
 
-		// Parse and format result
-		const result = parseSearchResponse(data);
-		return formatSearchResult(result);
+		// Parse and format result (metadata will be added by caller)
+		const searchResult = parseSearchResponse(data);
+		return {
+			...baseResult,
+			success: true,
+			result: formatSearchResult(searchResult),
+			responseTime,
+		};
 	} catch (error) {
+		const responseTime = trackTiming ? Date.now() - startTime : undefined;
+
 		// Handle timeout
 		if (error instanceof Error && error.name === 'TimeoutError') {
-			return `## Search Timeout
+			return {
+				...baseResult,
+				success: false,
+				result: `## Search Timeout
 
 The search request timed out after ${SEARCH_TIMEOUT_MS / 1000} seconds.
 
 **What to do:**
 - Try a simpler or more specific query
 - Check your internet connection
-- Try again in a few moments`;
+- Try again in a few moments`,
+				responseTime,
+			};
 		}
 
 		// Handle network errors
 		if (error instanceof TypeError && error.message.includes('fetch')) {
-			return `## Network Error
+			return {
+				...baseResult,
+				success: false,
+				result: `## Network Error
 
 Could not connect to the ${provider === 'gemini' ? 'Gemini CLI' : 'Antigravity'} API.
 
 **What to do:**
 - Check your internet connection
 - Verify you can reach Google services
-- Try again in a few moments`;
+- Try again in a few moments`,
+				responseTime,
+			};
 		}
 
 		// Generic error
 		const message = error instanceof Error ? error.message : 'Unknown error';
-		return `## Search Error
+		return {
+			...baseResult,
+			success: false,
+			result: `## Search Error
 
 An unexpected error occurred.
 
@@ -217,8 +286,35 @@ An unexpected error occurred.
 **Troubleshooting:**
 - Check your internet connection
 - Verify your authentication with \`auth --status\`
-- Try again or re-authenticate with \`auth --login ${provider}\``;
+- Try again or re-authenticate with \`auth --login ${provider}\``,
+			responseTime,
+		};
 	}
+}
+
+/**
+ * Execute a grounded search request to the Gemini API.
+ *
+ * @param options - Search options (query + optional thinking level)
+ * @param provider - Target provider ('gemini' | 'antigravity')
+ * @param accessToken - Valid OAuth access token
+ * @param endpointOverride - Optional endpoint override (for fallback)
+ * @returns Formatted markdown response (success or error)
+ * @deprecated Use searchWithFallback for new code
+ */
+export async function executeGroundedSearch(
+	options: SearchOptions,
+	provider: ProviderName,
+	accessToken: string,
+	endpointOverride?: string,
+): Promise<string> {
+	const result = await executeGroundedSearchInternal(
+		options,
+		provider,
+		accessToken,
+		endpointOverride,
+	);
+	return result.result;
 }
 
 // ============================================================================
@@ -232,22 +328,25 @@ An unexpected error occurred.
 async function tryAntigravitySearch(
 	options: SearchOptions,
 	accessToken: string,
-): Promise<{ success: boolean; result: string }> {
-	const result = await executeGroundedSearch(
+	trackTiming: boolean,
+): Promise<SearchResultWithMetadata> {
+	const result = await executeGroundedSearchInternal(
 		options,
 		'antigravity',
 		accessToken,
 		ANTIGRAVITY_ENDPOINT,
+		trackTiming,
 	);
 
 	// Check if this was a capacity error that should trigger provider fallback
 	if (
-		result.includes('No capacity available') ||
-		result.includes('Resource has been exhausted') ||
-		result.includes('503') ||
-		result.includes('429')
+		result.result.includes('No capacity available') ||
+		result.result.includes('Resource has been exhausted') ||
+		result.result.includes('503') ||
+		result.result.includes('429')
 	) {
 		return {
+			...result,
 			success: false,
 			result: `## Antigravity Unavailable
 
@@ -259,23 +358,109 @@ The Antigravity endpoint is currently at capacity.
 		};
 	}
 
-	return { success: true, result };
+	return result;
+}
+
+/**
+ * Add request metadata to a search result.
+ */
+function addMetadataToResult(
+	searchResult: SearchResultWithMetadata,
+	fallbackUsed: boolean,
+): string {
+	if (!searchResult.success) {
+		// For error responses, return as-is (no metadata to add)
+		return searchResult.result;
+	}
+
+	// Build metadata for successful responses
+	const metadata: RequestMetadata = {
+		provider: searchResult.provider,
+		model: searchResult.model,
+		thinkingLevel: searchResult.thinkingLevel,
+		fallbackUsed,
+		responseTime: searchResult.responseTime,
+	};
+
+	// Re-parse the result to add metadata
+	// Since formatSearchResult already formatted without metadata,
+	// we need to insert the Request Details section
+	const result = searchResult.result;
+	const sourcesIndex = result.indexOf('\n### Sources');
+	const queriesIndex = result.indexOf('\n### Search Queries Used');
+
+	// Find insertion point: after Sources section, before Search Queries Used
+	// Or at end if neither exists
+	const requestDetails = formatRequestDetails(metadata);
+
+	if (queriesIndex !== -1) {
+		// Insert before Search Queries Used
+		return `${result.slice(0, queriesIndex)}\n\n${requestDetails}${result.slice(queriesIndex)}`;
+	}
+	if (sourcesIndex !== -1) {
+		// Find end of Sources section (look for next section or end)
+		const afterSources = result.indexOf('\n\n', sourcesIndex + 1);
+		if (afterSources !== -1) {
+			return `${result.slice(0, afterSources)}\n\n${requestDetails}${result.slice(afterSources)}`;
+		}
+	}
+
+	// Append at end
+	return `${result}\n\n${requestDetails}`;
+}
+
+/**
+ * Format request metadata as markdown section.
+ * (Local copy to avoid circular import)
+ */
+function formatRequestDetails(metadata: RequestMetadata): string {
+	const lines: string[] = ['### Request Details', ''];
+
+	const providerName = metadata.provider === 'antigravity' ? 'Antigravity' : 'Gemini CLI';
+	lines.push(`- **Provider:** ${providerName}`);
+	lines.push(`- **Model:** ${metadata.model}`);
+
+	if (metadata.thinkingLevel && metadata.thinkingLevel !== 'none') {
+		lines.push(`- **Thinking:** ${metadata.thinkingLevel}`);
+	}
+
+	if (metadata.fallbackUsed) {
+		lines.push('- **Note:** Fallback provider used');
+	}
+
+	if (metadata.responseTime !== undefined) {
+		lines.push(`- **Response time:** ${metadata.responseTime}ms`);
+	}
+
+	return lines.join('\n');
 }
 
 /**
  * Execute a grounded search with provider fallback.
  *
- * Tries the default provider first (Antigravity by default).
- * For Antigravity, tries multiple endpoints before falling back to Gemini CLI.
+ * Tries the default provider first (from config or token storage).
+ * For Antigravity, tries daily sandbox endpoint before falling back to Gemini CLI.
  *
  * Uses getValidAccessToken() from auth module (handles refresh).
+ * Loads config for defaults (thinking level, provider preference).
  *
  * @param options - Search options (query + optional thinking level)
- * @returns Formatted markdown response
+ * @returns Formatted markdown response with request metadata
  */
 export async function searchWithFallback(options: SearchOptions): Promise<string> {
+	// Load config for defaults
+	const config = await loadConfig();
+
+	// Apply config defaults if not specified in options
+	const effectiveOptions: SearchOptions = {
+		query: options.query,
+		thinking: options.thinking ?? config.defaultThinking,
+	};
+
 	const providers: ProviderName[] = ['antigravity', 'gemini'];
-	const defaultProvider = await getDefaultProvider();
+
+	// Use config default provider, falling back to auth token storage default
+	const defaultProvider = config.defaultProvider ?? (await getDefaultProvider());
 
 	// Order providers: default first, then other
 	const orderedProviders: ProviderName[] = [
@@ -284,6 +469,8 @@ export async function searchWithFallback(options: SearchOptions): Promise<string
 	];
 
 	let lastError: string | null = null;
+	let fallbackUsed = false;
+	const attemptedProviders: ProviderName[] = [];
 
 	for (const provider of orderedProviders) {
 		try {
@@ -294,26 +481,43 @@ export async function searchWithFallback(options: SearchOptions): Promise<string
 				continue;
 			}
 
+			attemptedProviders.push(provider);
+
+			// Check if this is a fallback
+			if (attemptedProviders.length > 1) {
+				fallbackUsed = true;
+			}
+
 			// For Antigravity, use daily sandbox endpoint
 			if (provider === 'antigravity') {
-				const { success, result } = await tryAntigravitySearch(options, accessToken);
-				if (success) {
-					return result;
+				const searchResult = await tryAntigravitySearch(
+					effectiveOptions,
+					accessToken,
+					config.verbose,
+				);
+				if (searchResult.success) {
+					return addMetadataToResult(searchResult, fallbackUsed);
 				}
-				lastError = result;
+				lastError = searchResult.result;
 				continue; // Try next provider (Gemini CLI)
 			}
 
 			// For Gemini CLI, single endpoint
-			const result = await executeGroundedSearch(options, provider, accessToken);
+			const searchResult = await executeGroundedSearchInternal(
+				effectiveOptions,
+				provider,
+				accessToken,
+				undefined,
+				config.verbose,
+			);
 
 			// Check if result is an auth error that should trigger fallback
-			if (result.startsWith('## Authentication Error')) {
-				lastError = result;
+			if (searchResult.result.startsWith('## Authentication Error')) {
+				lastError = searchResult.result;
 				continue;
 			}
 
-			return result;
+			return addMetadataToResult(searchResult, fallbackUsed);
 		} catch (error) {
 			// Token refresh or other auth error - try next provider
 			const message = error instanceof Error ? error.message : 'Unknown error';
