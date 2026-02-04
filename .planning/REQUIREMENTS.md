@@ -19,8 +19,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SEARCH-01**: MCP exposes `grounded_search` tool that performs Google-grounded search
 - [x] **SEARCH-02**: Search returns text response with source citations (URLs, titles)
 - [x] **SEARCH-03**: Search returns the actual queries Google used (for transparency)
-- [ ] **SEARCH-04**: User can specify model via tool parameter (gemini-3-flash, gemini-3-pro, etc.)
-- [ ] **SEARCH-05**: User can specify thinking level via tool parameter
+- [ ] **SEARCH-04**: User can specify model via tool parameter (gemini-3-flash, gemini-3-pro, etc.) — BLOCKED: API only supports one model per provider
+- [x] **SEARCH-05**: User can specify thinking level via tool parameter
 
 ### Research/Investigation
 
@@ -31,8 +31,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Configuration
 
-- [ ] **CONFIG-01**: User can configure default model preference
-- [ ] **CONFIG-02**: User can configure default thinking level
+- [x] **CONFIG-01**: User can configure default model preference (via provider selection - model is provider-determined)
+- [x] **CONFIG-02**: User can configure default thinking level
 
 ### Error Handling
 
@@ -87,10 +87,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEARCH-01 | Phase 4 | Complete |
 | SEARCH-02 | Phase 4 | Complete |
 | SEARCH-03 | Phase 4 | Complete |
-| SEARCH-04 | Phase 5 | Pending |
-| SEARCH-05 | Phase 5 | Pending |
-| CONFIG-01 | Phase 5 | Pending |
-| CONFIG-02 | Phase 5 | Pending |
+| SEARCH-04 | Phase 5 | Blocked (API) |
+| SEARCH-05 | Phase 5 | Complete |
+| CONFIG-01 | Phase 5 | Complete |
+| CONFIG-02 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 17 total
@@ -99,4 +99,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 (Phase 4 complete - SEARCH-01, SEARCH-02, SEARCH-03 satisfied)*
+*Last updated: 2026-02-04 (Phase 5 complete - CONFIG-01, CONFIG-02, SEARCH-05 satisfied; SEARCH-04 blocked by API)*

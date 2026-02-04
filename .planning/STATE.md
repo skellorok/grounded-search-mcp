@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Real-time, grounded web search with authoritative source citations
-**Current focus:** Phase 5 - Configuration (COMPLETE)
+**Current focus:** Phase 6 - Polish & Validation
 
 ## Current Position
 

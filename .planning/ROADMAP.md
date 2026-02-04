@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Foundation** - Establish MCP server skeleton with placeholder tool
 - [x] **Phase 3: Authentication** - OAuth flows with token persistence and error states
 - [x] **Phase 4: Core Search** - Grounded search with citations and transparency
-- [ ] **Phase 5: Configuration** - Model selection, thinking levels, and user preferences
+- [x] **Phase 5: Configuration** - Model selection, thinking levels, and user preferences
 - [ ] **Phase 6: Polish & Validation** - Edge cases, error recovery, production readiness
 
 ## Phase Details
@@ -97,7 +97,7 @@ Plans:
 - SEARCH-05 (thinking level): Parameter already implemented in Phase 4. This phase adds persistence.
 
 Plans:
-- [ ] 05-01-PLAN.md - Config module, config tool, and response metadata integration
+- [x] 05-01-PLAN.md - Config module, config tool, and response metadata integration
 
 ### Phase 6: Polish & Validation
 **Goal**: Production-ready MCP server with robust error handling and edge case coverage
@@ -125,10 +125,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Foundation | 1/1 | Complete | 2026-02-03 |
 | 3. Authentication | 3/3 | Complete | 2026-02-03 |
 | 4. Core Search | 2/2 | Complete | 2026-02-03 |
-| 5. Configuration | 0/1 | Not started | - |
+| 5. Configuration | 1/1 | Complete | 2026-02-04 |
 | 6. Polish & Validation | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last revised: 2026-02-04 (Phase 5 scope revised - model selection blocked by API, reduced to 1 plan)*
+*Last revised: 2026-02-04 (Phase 5 complete)*
 *Total v1 requirements: 17 (17 mapped, 0 orphaned)*
