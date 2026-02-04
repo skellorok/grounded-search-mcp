@@ -3,6 +3,16 @@
 	"version": "0.1.0",
 	"type": "module",
 	"description": "MCP server providing Google Search grounding via Gemini API",
+	"license": "MIT",
+	"keywords": [
+		"mcp",
+		"claude",
+		"gemini",
+		"google-search",
+		"grounding",
+		"claude-code",
+		"web-search"
+	],
 	"bin": {
 		"gemini-search-mcp": "./build/index.js"
 	},
