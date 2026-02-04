@@ -31,9 +31,10 @@ export function getConfigFilePath(): string {
  * Load config from disk with Zod validation
  *
  * Uses safeParse for graceful handling of invalid configs.
+ * Creates config file with defaults on first run.
  * NEVER throws - returns defaults on any error.
  *
- * @returns ConfigFile (defaults if file missing or invalid)
+ * @returns ConfigFile (creates with defaults if file missing, returns defaults if invalid)
  */
 export async function loadConfig(): Promise<ConfigFile> {
 	const configPath = getConfigFilePath();
@@ -51,8 +52,9 @@ export async function loadConfig(): Promise<ConfigFile> {
 		console.error('Config file invalid, using defaults:', result.error.message);
 		return DEFAULT_CONFIG;
 	} catch (error) {
-		// File doesn't exist - normal case for first run
+		// File doesn't exist - create with defaults on first run
 		if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+			await saveConfig(DEFAULT_CONFIG);
 			return DEFAULT_CONFIG;
 		}
 

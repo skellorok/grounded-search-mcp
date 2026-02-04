@@ -22,14 +22,14 @@ import {
 } from '../config/index.js';
 
 // ============================================================================
-// FORMATTING FUNCTIONS
+// FORMATTING FUNCTIONS (plain text for terminal display)
 // ============================================================================
 
 /**
  * Format config for --show output
  */
 function formatShowConfig(config: ConfigFile): string {
-	const lines: string[] = ['## Configuration', ''];
+	const lines: string[] = ['CONFIGURATION', '═'.repeat(50), ''];
 
 	for (const key of CONFIGURABLE_KEYS) {
 		const keyInfo = CONFIG_KEYS[key];
@@ -37,33 +37,23 @@ function formatShowConfig(config: ConfigFile): string {
 		const defaultValue = keyInfo.default;
 		const isDefault = currentValue === defaultValue;
 
-		lines.push(`### ${key}`);
-		lines.push(`**Current:** ${formatValue(currentValue)}${isDefault ? ' (default)' : ''}`);
-		lines.push(`**Default:** ${formatValue(defaultValue)}`);
+		lines.push(`${key}`);
+		lines.push(`  Current: ${currentValue}${isDefault ? ' (default)' : ''}`);
+		lines.push(`  Default: ${defaultValue}`);
 
 		if (keyInfo.type === 'enum' && 'values' in keyInfo) {
-			lines.push(`**Valid:** ${keyInfo.values.map((v) => `\`${v}\``).join(', ')}`);
+			lines.push(`  Valid:   ${keyInfo.values.join(', ')}`);
 		} else if (keyInfo.type === 'number' && 'min' in keyInfo && 'max' in keyInfo) {
-			lines.push(`**Range:** ${keyInfo.min} - ${keyInfo.max}`);
+			lines.push(`  Range:   ${keyInfo.min} - ${keyInfo.max}`);
 		} else if (keyInfo.type === 'boolean') {
-			lines.push('**Valid:** `true`, `false`');
+			lines.push('  Valid:   true, false');
 		}
 
-		lines.push(`*${keyInfo.description}*`);
+		lines.push(`  ${keyInfo.description}`);
 		lines.push('');
 	}
 
 	return lines.join('\n');
-}
-
-/**
- * Format value for display
- */
-function formatValue(value: unknown): string {
-	if (typeof value === 'string') {
-		return `\`${value}\``;
-	}
-	return `\`${String(value)}\``;
 }
 
 /**
@@ -73,21 +63,19 @@ function formatGetResult(key: string, value: unknown): string {
 	const keyInfo = CONFIG_KEYS[key as keyof typeof CONFIG_KEYS];
 	const description = keyInfo?.description ?? '';
 
-	return `## ${key}
+	return `${key} = ${value}
 
-**Value:** ${formatValue(value)}
-
-*${description}*`;
+${description}`;
 }
 
 /**
  * Format success message for --set
  */
 function formatSetSuccess(changes: Array<{ key: string; value: unknown }>): string {
-	const lines: string[] = ['## Configuration Updated', ''];
+	const lines: string[] = ['Configuration updated:', ''];
 
 	for (const { key, value } of changes) {
-		lines.push(`- **${key}:** ${formatValue(value)}`);
+		lines.push(`  ${key} = ${value}`);
 	}
 
 	return lines.join('\n');
@@ -98,52 +86,43 @@ function formatSetSuccess(changes: Array<{ key: string; value: unknown }>): stri
  */
 function formatResetSuccess(key?: string): string {
 	if (key) {
-		return `## Configuration Reset
-
-Reset **${key}** to default value: ${formatValue(DEFAULT_CONFIG[key as keyof ConfigFile])}`;
+		return `Reset ${key} to default: ${DEFAULT_CONFIG[key as keyof ConfigFile]}`;
 	}
 
-	return `## Configuration Reset
-
-All settings have been reset to their default values.`;
+	return 'All settings reset to defaults.';
 }
 
 /**
  * Format help text
  */
 function formatHelp(): string {
-	return `## Config Tool
+	return `Config Tool - Manage search preferences
 
-Manage search configuration preferences.
+Usage:
+  config --show              Show all settings
+  config --get <key>         Get specific value
+  config --set key=value     Set value(s)
+  config --reset             Reset all to defaults
+  config --reset <key>       Reset specific key
 
-**Usage:**
-- config --show: Show all current settings with defaults
-- config --get <key>: Get specific config value
-- config --set key=value: Set one or more config values
-- config --reset: Reset all settings to defaults
-- config --reset <key>: Reset specific key to default
+Keys:
+  defaultProvider   antigravity | gemini
+  defaultThinking   high | low | none
+  includeThoughts   true | false
+  timeout           1000-300000 (ms)
+  verbose           true | false
 
-**Configurable keys:**
-- **defaultProvider**: Search provider ('antigravity' or 'gemini')
-- **defaultThinking**: Thinking level ('high', 'low', or 'none')
-- **includeThoughts**: Include model thinking (true or false)
-- **timeout**: Search timeout in ms (1000-300000)
-- **verbose**: Enable verbose output (true or false)
-
-**Examples:**
-- config --set defaultProvider=gemini
-- config --set defaultThinking=low timeout=30000
-- config --get defaultProvider
-- config --reset defaultThinking`;
+Examples:
+  config --set defaultProvider=gemini
+  config --set defaultThinking=low timeout=30000
+  config --get defaultProvider`;
 }
 
 /**
  * Format error message
  */
 function formatError(message: string): string {
-	return `## Error
-
-${message}`;
+	return `Error: ${message}`;
 }
 
 // ============================================================================
