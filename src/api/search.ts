@@ -5,9 +5,9 @@
  * Uses two-stage orchestration pattern from request.ts.
  */
 
-import { getDefaultProvider, getValidAccessToken, isAuthenticated } from '../auth/index.js';
+import { getDefaultProvider, getValidAccessToken } from '../auth/index.js';
 import type { ProviderName } from '../auth/types.js';
-import { SEARCH_TIMEOUT_MS } from './constants.js';
+import { GEMINI_CLI_ENDPOINT, SEARCH_TIMEOUT_MS } from './constants.js';
 import { buildSearchRequest, getProviderConfig } from './request.js';
 import {
 	type ApiResponse,
@@ -17,18 +17,71 @@ import {
 } from './response.js';
 
 // ============================================================================
-// TYPES
+// PROJECT ID RESOLUTION (Gemini CLI)
 // ============================================================================
 
 /**
- * Options for search execution
+ * Cached project ID for Gemini CLI provider.
+ * Retrieved via loadCodeAssist API call.
  */
-export interface SearchOptions {
-	/** Thinking level: 'high' | 'low' */
-	thinkingLevel?: 'high' | 'low';
-	/** Include thinking process in response */
-	includeThoughts?: boolean;
+let geminiCliProjectId: string | null = null;
+
+/**
+ * Get the project ID for Gemini CLI provider.
+ * Calls loadCodeAssist API to retrieve the managed project ID.
+ * Result is cached for the session.
+ *
+ * @param accessToken - Valid OAuth access token
+ * @returns Project ID string, or null if not available
+ */
+async function getGeminiCliProjectId(accessToken: string): Promise<string | null> {
+	// Return cached value if available
+	if (geminiCliProjectId) {
+		return geminiCliProjectId;
+	}
+
+	const url = `${GEMINI_CLI_ENDPOINT}/v1internal:loadCodeAssist`;
+
+	try {
+		const response = await fetch(url, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				metadata: {
+					ideType: 'IDE_UNSPECIFIED',
+					platform: 'PLATFORM_UNSPECIFIED',
+					pluginType: 'GEMINI',
+				},
+			}),
+			signal: AbortSignal.timeout(10000),
+		});
+
+		if (!response.ok) {
+			return null;
+		}
+
+		const data = await response.json();
+
+		// Extract project ID from response
+		if (data.cloudaicompanionProject) {
+			geminiCliProjectId = data.cloudaicompanionProject;
+			return geminiCliProjectId;
+		}
+
+		return null;
+	} catch {
+		return null;
+	}
 }
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+// No additional options needed - gemini-2.5-flash uses fixed config
 
 // ============================================================================
 // SEARCH EXECUTION
@@ -40,26 +93,34 @@ export interface SearchOptions {
  * @param query - Search query string
  * @param provider - Target provider ('gemini' | 'antigravity')
  * @param accessToken - Valid OAuth access token
- * @param options - Optional search options
  * @returns Formatted markdown response (success or error)
  */
 export async function executeGroundedSearch(
 	query: string,
 	provider: ProviderName,
 	accessToken: string,
-	options?: SearchOptions,
 ): Promise<string> {
 	const config = getProviderConfig(provider);
 
+	// Get project ID for Gemini CLI (required for API calls)
+	let projectId: string | undefined;
+	if (provider === 'gemini') {
+		const resolvedProjectId = await getGeminiCliProjectId(accessToken);
+		if (!resolvedProjectId) {
+			return `## Project Setup Required
+
+Could not retrieve your Gemini project ID.
+
+**To fix:**
+1. Ensure you have a valid Google account with Gemini access
+2. Try re-authenticating with \`auth --login gemini\`
+3. If you're using a Workspace account, set GOOGLE_CLOUD_PROJECT env var`;
+		}
+		projectId = resolvedProjectId;
+	}
+
 	// Build request body using two-stage orchestration
-	const requestBody = buildSearchRequest(
-		{
-			query,
-			thinkingLevel: options?.thinkingLevel,
-			includeThoughts: options?.includeThoughts,
-		},
-		provider,
-	);
+	const requestBody = buildSearchRequest({ query }, provider, projectId);
 
 	// Build URL
 	const url = `${config.endpoint}/v1internal:generateContent`;
@@ -151,10 +212,9 @@ An unexpected error occurred.
  * Uses getValidAccessToken() from auth module (handles refresh).
  *
  * @param query - Search query string
- * @param options - Optional search options
  * @returns Formatted markdown response
  */
-export async function searchWithFallback(query: string, options?: SearchOptions): Promise<string> {
+export async function searchWithFallback(query: string): Promise<string> {
 	const providers: ProviderName[] = ['gemini', 'antigravity'];
 	const defaultProvider = await getDefaultProvider();
 
@@ -167,13 +227,8 @@ export async function searchWithFallback(query: string, options?: SearchOptions)
 	let lastError: string | null = null;
 
 	for (const provider of orderedProviders) {
-		// Check if provider is authenticated
-		if (!(await isAuthenticated(provider))) {
-			continue;
-		}
-
 		try {
-			// Get valid access token (handles refresh)
+			// Get valid access token (handles refresh, returns null if not authenticated)
 			const accessToken = await getValidAccessToken(provider);
 
 			// Should not happen after isAuthenticated check, but handle gracefully
@@ -182,7 +237,7 @@ export async function searchWithFallback(query: string, options?: SearchOptions)
 			}
 
 			// Execute search
-			const result = await executeGroundedSearch(query, provider, accessToken, options);
+			const result = await executeGroundedSearch(query, provider, accessToken);
 
 			// Check if result is an auth error that should trigger fallback
 			// (Token may have been invalidated server-side after our check)

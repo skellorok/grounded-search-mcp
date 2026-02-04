@@ -29,9 +29,9 @@ export interface SearchResult {
 }
 
 /**
- * Raw API response structure from Gemini
+ * Inner response structure (inside the 'response' wrapper)
  */
-export interface ApiResponse {
+interface InnerResponse {
 	candidates?: Array<{
 		content?: {
 			parts?: Array<{ text?: string }>;
@@ -46,6 +46,14 @@ export interface ApiResponse {
 			webSearchQueries?: string[];
 		};
 	}>;
+}
+
+/**
+ * Raw API response structure from Gemini (wrapped format)
+ */
+export interface ApiResponse {
+	response?: InnerResponse;
+	traceId?: string;
 	error?: {
 		code?: number;
 		message?: string;
@@ -68,7 +76,8 @@ export interface ApiResponse {
  * Handles missing/undefined gracefully and deduplicates sources by URL.
  */
 export function parseSearchResponse(data: ApiResponse): SearchResult {
-	const candidate = data.candidates?.[0];
+	// Unwrap the response (Gemini CLI format has response wrapper)
+	const candidate = data.response?.candidates?.[0];
 
 	// Extract text from all parts
 	const parts = candidate?.content?.parts ?? [];

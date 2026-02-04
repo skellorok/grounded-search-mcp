@@ -11,9 +11,7 @@ export {
 	ANTIGRAVITY_ENDPOINT,
 	ANTIGRAVITY_HEADERS,
 	ANTIGRAVITY_VERSION,
-	DEFAULT_INCLUDE_THOUGHTS,
 	DEFAULT_MODEL,
-	DEFAULT_THINKING_LEVEL,
 	GEMINI_CLI_CONFIG,
 	GEMINI_CLI_ENDPOINT,
 	GEMINI_CLI_HEADERS,
@@ -45,8 +43,4 @@ export {
 } from './response.js';
 
 // Search execution
-export {
-	executeGroundedSearch,
-	searchWithFallback,
-	type SearchOptions,
-} from './search.js';
+export { executeGroundedSearch, searchWithFallback } from './search.js';

@@ -46,7 +46,8 @@ export const PROVIDER_CONFIGS: Record<ProviderName, ProviderConfig> = {
 			'https://www.googleapis.com/auth/cclog',
 			'https://www.googleapis.com/auth/experimentsandconfigs',
 		],
-		redirectUri: 'https://codeassist.google.com/authcode',
+		// Antigravity uses loopback redirect - user must copy code from URL bar
+		redirectUri: 'http://localhost:51121/oauth-callback',
 		name: 'Antigravity',
 	},
 };

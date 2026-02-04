@@ -145,15 +145,11 @@ export const ANTIGRAVITY_CONFIG: ProviderApiConfig = {
 // ============================================================================
 
 /**
- * Default model for search requests
+ * Default model for search requests.
+ * Must use gemini-2.5-flash for googleSearch tool support.
+ * Gemini 3 models don't support the googleSearch grounding tool.
  */
-export const DEFAULT_MODEL = 'gemini-3-flash';
-
-/**
- * Default thinking configuration
- */
-export const DEFAULT_THINKING_LEVEL = 'low' as const;
-export const DEFAULT_INCLUDE_THOUGHTS = false;
+export const DEFAULT_MODEL = 'gemini-2.5-flash';
 
 /**
  * Timeout for search requests (60 seconds)

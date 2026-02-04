@@ -92,10 +92,35 @@ async function formatStatus(): Promise<string> {
 }
 
 /**
+ * Extract authorization code from a URL or return the code as-is
+ */
+function extractCode(codeOrUrl: string): string {
+	// Check if it looks like a URL
+	if (codeOrUrl.includes('code=')) {
+		try {
+			const url = new URL(codeOrUrl);
+			const code = url.searchParams.get('code');
+			if (code) return code;
+		} catch {
+			// Try to extract code= from malformed URL
+			const match = codeOrUrl.match(/[?&]code=([^&]+)/);
+			if (match) return decodeURIComponent(match[1]);
+		}
+	}
+	return codeOrUrl;
+}
+
+/**
  * Format login instructions as markdown
  */
 function formatLoginInstructions(provider: ProviderName, authUrl: string): string {
 	const displayName = getProviderDisplayName(provider);
+	const isAntigravity = provider === 'antigravity';
+
+	const step3 = isAntigravity
+		? `3. After authorizing, your browser will show "connection refused" - this is expected.
+   Copy the **entire URL** from your browser's address bar.`
+		: '3. Copy the authorization code shown on the page (or the entire URL).';
 
 	return `## Authentication Required
 
@@ -106,9 +131,9 @@ To authenticate with ${displayName}:
 
 2. Sign in with your Google account and authorize the application
 
-3. Copy the authorization code shown on the page
+${step3}
 
-4. Reply with: auth --login ${provider} --code YOUR_CODE
+4. Reply with: auth --login ${provider} --code PASTE_HERE
 
 **Note:** This process will time out in 5 minutes.`;
 }
@@ -294,8 +319,11 @@ export function registerAuthTool(server: McpServer): void {
 						};
 					}
 
+					// Extract code from URL if needed
+					const authCode = extractCode(code);
+
 					// Complete the login
-					const result = await completeLogin(code, activeFlow.flowState);
+					const result = await completeLogin(authCode, activeFlow.flowState);
 
 					// Clear the flow regardless of success/failure
 					activeAuthFlows.delete(loginProvider);
@@ -386,8 +414,11 @@ export function registerAuthTool(server: McpServer): void {
 						};
 					}
 
+					// Extract code from URL if needed
+					const authCode = extractCode(code);
+
 					// Complete the login
-					const result = await completeLogin(code, activeFlow.flowState);
+					const result = await completeLogin(authCode, activeFlow.flowState);
 
 					// Clear the flow
 					activeAuthFlows.delete(provider);

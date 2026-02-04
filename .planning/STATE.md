@@ -74,6 +74,10 @@ Recent decisions affecting current work:
 - [04-02]: Sources deduplicated by URL in parseSearchResponse
 - [04-02]: Error responses formatted as markdown with troubleshooting steps
 - [04-02]: Provider fallback tries default first, then other authenticated provider
+- [04-UAT]: gemini-2.5-flash required for googleSearch tool (Gemini 3 returns UNEXPECTED_TOOL_CALL)
+- [04-UAT]: Antigravity as default provider, Gemini CLI as fallback
+- [04-UAT]: URL paste-back for Antigravity auth (loopback not feasible over SSH)
+- [04-UAT]: Removed early isAuthenticated checks - let getValidAccessToken() handle refresh
 
 ### Pending Todos
 
@@ -88,8 +92,8 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-03T22:45:00Z
-Stopped at: Completed Phase 4 (Core Search)
+Last session: 2026-02-04
+Stopped at: Phase 4 complete - all UAT tests passing
 Resume file: None
 
 ---
