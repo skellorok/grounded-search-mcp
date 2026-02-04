@@ -28,7 +28,7 @@ import {
 export type { ThinkingLevel } from './constants.js';
 
 // ============================================================================
-// PROJECT ID RESOLUTION (Gemini CLI)
+// PROJECT ID RESOLUTION
 // ============================================================================
 
 /**
@@ -36,6 +36,22 @@ export type { ThinkingLevel } from './constants.js';
  * Retrieved via loadCodeAssist API call.
  */
 let geminiCliProjectId: string | null = null;
+
+/**
+ * Cached project ID for Antigravity provider.
+ * Retrieved via loadCodeAssist API call.
+ */
+let antigravityProjectId: string | null = null;
+
+/**
+ * Endpoints to try for loadCodeAssist (prod first, then fallbacks).
+ * Matches OpenCode's ANTIGRAVITY_LOAD_ENDPOINTS order.
+ */
+const LOAD_CODE_ASSIST_ENDPOINTS = [
+	'https://cloudcode-pa.googleapis.com', // prod - best for project resolution
+	'https://daily-cloudcode-pa.sandbox.googleapis.com', // daily sandbox
+	'https://autopush-cloudcode-pa.sandbox.googleapis.com', // autopush
+];
 
 /**
  * Get the project ID for Gemini CLI provider.
@@ -86,6 +102,76 @@ async function getGeminiCliProjectId(accessToken: string): Promise<string | null
 	} catch {
 		return null;
 	}
+}
+
+/**
+ * Get the project ID for Antigravity provider.
+ * Calls loadCodeAssist API across multiple endpoints to retrieve the managed project ID.
+ * Tries prod first (best for project resolution), then falls back to sandbox endpoints.
+ * Result is cached for the session.
+ *
+ * @param accessToken - Valid OAuth access token
+ * @returns Project ID string, or null if not available
+ */
+async function getAntigravityProjectId(accessToken: string): Promise<string | null> {
+	// Return cached value if available
+	if (antigravityProjectId) {
+		return antigravityProjectId;
+	}
+
+	const requestBody = {
+		metadata: {
+			ideType: 'IDE_UNSPECIFIED',
+			platform: 'PLATFORM_UNSPECIFIED',
+			pluginType: 'GEMINI',
+		},
+	};
+
+	// Try each endpoint until one succeeds
+	for (const baseEndpoint of LOAD_CODE_ASSIST_ENDPOINTS) {
+		try {
+			const url = `${baseEndpoint}/v1internal:loadCodeAssist`;
+
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+					'Content-Type': 'application/json',
+					// Use Gemini CLI style headers for loadCodeAssist (matches OpenCode)
+					'User-Agent': 'google-api-nodejs-client/9.15.1',
+					'X-Goog-Api-Client': 'google-cloud-sdk vscode_cloudshelleditor/0.1',
+				},
+				body: JSON.stringify(requestBody),
+				signal: AbortSignal.timeout(10000),
+			});
+
+			if (!response.ok) {
+				continue;
+			}
+
+			const data = await response.json();
+
+			// Extract project ID - can be string or object with id property
+			let projectId: string | null = null;
+			if (typeof data.cloudaicompanionProject === 'string' && data.cloudaicompanionProject) {
+				projectId = data.cloudaicompanionProject;
+			} else if (
+				data.cloudaicompanionProject &&
+				typeof data.cloudaicompanionProject.id === 'string'
+			) {
+				projectId = data.cloudaicompanionProject.id;
+			}
+
+			if (projectId) {
+				antigravityProjectId = projectId;
+				return antigravityProjectId;
+			}
+		} catch {
+			// Try next endpoint
+		}
+	}
+
+	return null;
 }
 
 // ============================================================================
@@ -152,7 +238,7 @@ async function executeGroundedSearchInternal(
 		thinkingLevel: options.thinking,
 	};
 
-	// Get project ID for Gemini CLI (required for API calls)
+	// Get project ID (required for API calls)
 	let projectId: string | undefined;
 	if (provider === 'gemini') {
 		const resolvedProjectId = await getGeminiCliProjectId(accessToken);
@@ -171,6 +257,15 @@ Could not retrieve your Gemini project ID.
 			};
 		}
 		projectId = resolvedProjectId;
+	} else if (provider === 'antigravity') {
+		// Resolve Antigravity project ID via loadCodeAssist
+		// Falls back to ANTIGRAVITY_DEFAULT_PROJECT_ID in wrapProviderRequest if null
+		const resolvedProjectId = await getAntigravityProjectId(accessToken);
+		if (resolvedProjectId) {
+			projectId = resolvedProjectId;
+		}
+		// Note: Unlike Gemini CLI, we don't fail if project ID is not resolved
+		// because Antigravity has a hardcoded fallback that might work
 	}
 
 	// Build request body using two-stage orchestration

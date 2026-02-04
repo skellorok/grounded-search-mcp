@@ -60,17 +60,15 @@ export const ANTIGRAVITY_HEADERS = {
 // HEADER RANDOMIZATION (Antigravity rate limit avoidance)
 // ============================================================================
 
-const ANTIGRAVITY_PLATFORMS = [
-	'windows/amd64',
-	'darwin/arm64',
-	'linux/amd64',
-	'darwin/amd64',
-	'linux/arm64',
+/**
+ * Antigravity User-Agents must use the full browser-like format.
+ * Short format (antigravity/1.15.8 linux/amd64) causes 404 errors.
+ */
+const ANTIGRAVITY_USER_AGENTS = [
+	`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Antigravity/${ANTIGRAVITY_VERSION} Chrome/138.0.7204.235 Electron/37.3.1 Safari/537.36`,
+	`Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Antigravity/${ANTIGRAVITY_VERSION} Chrome/138.0.7204.235 Electron/37.3.1 Safari/537.36`,
+	`Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Antigravity/${ANTIGRAVITY_VERSION} Chrome/138.0.7204.235 Electron/37.3.1 Safari/537.36`,
 ];
-
-const ANTIGRAVITY_USER_AGENTS = ANTIGRAVITY_PLATFORMS.map(
-	(platform) => `antigravity/${ANTIGRAVITY_VERSION} ${platform}`,
-);
 
 const ANTIGRAVITY_API_CLIENTS = [
 	'google-cloud-sdk vscode_cloudshelleditor/0.1',
