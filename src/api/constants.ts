@@ -184,13 +184,9 @@ export const PROVIDER_SUPPORTS_THINKING: Record<ProviderName, boolean> = {
  */
 export const SEARCH_TIMEOUT_MS = 60000;
 
-/**
- * Antigravity endpoint fallbacks (in order of preference)
- */
-export const ANTIGRAVITY_ENDPOINT_FALLBACKS = [
-	'https://daily-cloudcode-pa.sandbox.googleapis.com',
-	'https://autopush-cloudcode-pa.sandbox.googleapis.com',
-];
+// Note: Only the daily sandbox endpoint works with Antigravity OAuth credentials.
+// Autopush and production endpoints return 429 quota errors.
+// See: https://github.com/anthropics/claude-code/issues/... (testing confirmed 2026-02-04)
 
 // ============================================================================
 // SYSTEM INSTRUCTION

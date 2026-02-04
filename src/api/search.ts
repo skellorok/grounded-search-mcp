@@ -8,7 +8,7 @@
 import { getDefaultProvider, getValidAccessToken } from '../auth/index.js';
 import type { ProviderName } from '../auth/types.js';
 import {
-	ANTIGRAVITY_ENDPOINT_FALLBACKS,
+	ANTIGRAVITY_ENDPOINT,
 	GEMINI_CLI_ENDPOINT,
 	SEARCH_TIMEOUT_MS,
 	type ThinkingLevel,
@@ -226,41 +226,40 @@ An unexpected error occurred.
 // ============================================================================
 
 /**
- * Try Antigravity search with endpoint fallback.
- * Tries each endpoint in ANTIGRAVITY_ENDPOINT_FALLBACKS until one works.
+ * Try Antigravity search.
+ * Uses the daily sandbox endpoint (only endpoint with quota for Antigravity OAuth).
  */
-async function tryAntigravityWithFallback(
+async function tryAntigravitySearch(
 	options: SearchOptions,
 	accessToken: string,
 ): Promise<{ success: boolean; result: string }> {
-	for (const endpoint of ANTIGRAVITY_ENDPOINT_FALLBACKS) {
-		const result = await executeGroundedSearch(options, 'antigravity', accessToken, endpoint);
+	const result = await executeGroundedSearch(
+		options,
+		'antigravity',
+		accessToken,
+		ANTIGRAVITY_ENDPOINT,
+	);
 
-		// Check if this was a capacity/quota error that should trigger endpoint fallback
-		if (
-			result.includes('No capacity available') ||
-			result.includes('Resource has been exhausted') ||
-			result.includes('503') ||
-			result.includes('429')
-		) {
-			// Try next endpoint
-			continue;
-		}
+	// Check if this was a capacity error that should trigger provider fallback
+	if (
+		result.includes('No capacity available') ||
+		result.includes('Resource has been exhausted') ||
+		result.includes('503') ||
+		result.includes('429')
+	) {
+		return {
+			success: false,
+			result: `## Antigravity Unavailable
 
-		return { success: true, result };
-	}
-
-	// All endpoints exhausted
-	return {
-		success: false,
-		result: `## Antigravity Unavailable
-
-All Antigravity endpoints are currently at capacity.
+The Antigravity endpoint is currently at capacity.
 
 **What to do:**
 - Try again in a few moments
 - Use Gemini CLI as fallback: \`auth --default-provider gemini\``,
-	};
+		};
+	}
+
+	return { success: true, result };
 }
 
 /**
@@ -295,9 +294,9 @@ export async function searchWithFallback(options: SearchOptions): Promise<string
 				continue;
 			}
 
-			// For Antigravity, try endpoint fallback
+			// For Antigravity, use daily sandbox endpoint
 			if (provider === 'antigravity') {
-				const { success, result } = await tryAntigravityWithFallback(options, accessToken);
+				const { success, result } = await tryAntigravitySearch(options, accessToken);
 				if (success) {
 					return result;
 				}
