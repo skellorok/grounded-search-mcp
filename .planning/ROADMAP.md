@@ -100,19 +100,20 @@ Plans:
 - [x] 05-01-PLAN.md - Config module, config tool, and response metadata integration
 
 ### Phase 6: Polish & Validation
-**Goal**: Production-ready MCP server with robust error handling and edge case coverage
+**Goal**: Production-ready MCP server with validation testing and comprehensive documentation
 **Depends on**: Phase 5 (polish requires feature-complete implementation)
-**Requirements**: None (all requirements mapped; this phase is quality assurance)
+**Requirements**: None (all requirements mapped; this phase is quality assurance and release prep)
 **Success Criteria** (what must be TRUE):
-  1. Exponential backoff handles rate limits gracefully (no death spiral)
-  2. Token refresh works under concurrent requests (mutex prevents race conditions)
-  3. Server recovery from transient API failures does not require restart
-  4. All MCP schema validated against Claude Code (no Draft 2020-12 incompatibilities)
-**Plans**: TBD
+  1. Token refresh deduplication verified by unit tests (concurrent calls result in single refresh)
+  2. Config loading graceful fallback verified (corrupt/missing files return defaults)
+  3. Error responses follow consistent format with actionable guidance
+  4. Comprehensive README with installation, configuration, and usage documentation
+  5. MIT license and release-ready package.json
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: Error handling and resilience
-- [ ] 06-02: End-to-end validation and edge cases
+- [ ] 06-01-PLAN.md - Validation test suite (Vitest tests for refresh, config, error handling)
+- [ ] 06-02-PLAN.md - Documentation and release preparation (README, WebSearch comparison, GSD guide, license)
 
 ## Progress
 
