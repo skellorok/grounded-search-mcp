@@ -24,6 +24,7 @@ import {
 	formatSearchResult,
 	parseSearchResponse,
 } from './response.js';
+import { resolveRedirectUrls } from './url-resolver.js';
 
 // Re-export ThinkingLevel for use in search tool
 export type { ThinkingLevel } from './constants.js';
@@ -330,6 +331,12 @@ Could not retrieve your Gemini project ID.
 
 		// Parse and format result (metadata will be added by caller)
 		const searchResult = parseSearchResponse(data);
+
+		// Resolve redirect URLs to actual destinations
+		// The Gemini API returns redirect URLs (vertexaisearch.cloud.google.com/grounding-api-redirect/...)
+		// instead of actual URLs. This resolves them via HTTP HEAD requests.
+		searchResult.sources = await resolveRedirectUrls(searchResult.sources);
+
 		return {
 			...baseResult,
 			success: true,
