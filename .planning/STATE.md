@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 ## Current Position
 
 Phase: 6.1 (UAT Gap Closure & DX Tooling) - INSERTED
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-05 - Completed 06.1-02-PLAN.md (project rename)
+Last activity: 2026-02-05 - Completed 06.1-03-PLAN.md (Claude Code skills)
 
-Progress: [█████████░] 97%
+Progress: [█████████░] 98%
 
 ## Performance Metrics
 
@@ -33,10 +33,10 @@ Progress: [█████████░] 97%
 | 04-core-search | 2 | ~8min | ~4min |
 | 05-configuration | 1 | ~10min | ~10min |
 | 06-polish-validation | 2 | ~6min | ~3min |
-| 06.1-uat-gap-closure | 2 | ~7min | ~3.5min |
+| 06.1-uat-gap-closure | 3 | ~8min | ~2.7min |
 
 **Recent Trend:**
-- Last 5 plans: 06-01 (~3min), 06-02 (~3min), 06.1-01 (~4min), 06.1-02 (~3min)
+- Last 5 plans: 06-02 (~3min), 06.1-01 (~4min), 06.1-02 (~3min), 06.1-03 (~1min)
 - Trend: Consistently fast execution
 
 ## Accumulated Context
@@ -100,6 +100,9 @@ Recent decisions affecting current work:
 - [06.1-02]: Package renamed to grounded-search-mcp (provider-agnostic naming)
 - [06.1-02]: No token migration - users re-authenticate after upgrade (clean slate)
 - [06.1-02]: Config storage also renamed for consistency (deviation fix)
+- [06.1-03]: Skills use YAML frontmatter with name and description fields
+- [06.1-03]: Query skill outputs to ./grounded-search-results/ directory
+- [06.1-03]: Prep-gsd skill is idempotent - checks state before proposing changes
 
 ### Pending Todos
 
@@ -115,8 +118,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: Completed 06.1-02-PLAN.md
-Resume file: .planning/phases/06.1-uat-gap-closure/06.1-03-PLAN.md
+Stopped at: Completed 06.1-03-PLAN.md
+Resume file: .planning/phases/06.1-uat-gap-closure/06.1-04-PLAN.md
 
 ### Roadmap Evolution
 
@@ -125,4 +128,4 @@ Resume file: .planning/phases/06.1-uat-gap-closure/06.1-03-PLAN.md
   - Gaps: See 06-UAT.md for full list (fallback reason, error retry, naming, GSD integration)
 
 ---
-*Phase 6.1 in progress - 2/4 plans complete*
+*Phase 6.1 in progress - 3/4 plans complete*
