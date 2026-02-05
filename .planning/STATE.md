@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 
 ## Current Position
 
-Phase: 6.1 (UAT Gap Closure & DX Tooling) - COMPLETE
-Plan: 4 of 4 in current phase
+Phase: 6.1 (UAT Gap Closure & DX Tooling)
+Plan: 5 of 5 in current phase
 Status: Phase complete
-Last activity: 2026-02-05 - Completed 06.1-04-PLAN.md (documentation updates)
+Last activity: 2026-02-05 - Completed 06.1-05-PLAN.md (URL resolution)
 
 Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: ~11min
-- Total execution time: ~2.25 hours
+- Total plans completed: 13
+- Average duration: ~10min
+- Total execution time: ~2.3 hours
 
 **By Phase:**
 
@@ -33,10 +33,10 @@ Progress: [██████████] 100%
 | 04-core-search | 2 | ~8min | ~4min |
 | 05-configuration | 1 | ~10min | ~10min |
 | 06-polish-validation | 2 | ~6min | ~3min |
-| 06.1-uat-gap-closure | 4 | ~11min | ~2.75min |
+| 06.1-uat-gap-closure | 5 | ~14min | ~2.8min |
 
 **Recent Trend:**
-- Last 5 plans: 06.1-01 (~4min), 06.1-02 (~3min), 06.1-03 (~1min), 06.1-04 (~3min)
+- Last 5 plans: 06.1-01 (~4min), 06.1-02 (~3min), 06.1-03 (~1min), 06.1-04 (~3min), 06.1-05 (~3min)
 - Trend: Consistently fast execution
 
 ## Accumulated Context
@@ -106,6 +106,10 @@ Recent decisions affecting current work:
 - [06.1-04]: Agent override priority: CLI flag > project > user > plugin
 - [06.1-04]: Only research agents (phase/project) benefit from grounded_search
 - [06.1-04]: /grounded-search:prep-gsd as primary GSD integration method
+- [06.1-05]: HTTP HEAD method for URL resolution (efficiency - no body downloaded)
+- [06.1-05]: 5-second timeout per URL to prevent slow responses
+- [06.1-05]: In-memory cache for resolved URLs (no TTL, session-scoped)
+- [06.1-05]: Graceful degradation: return original URL on error/timeout
 
 ### Pending Todos
 
@@ -121,14 +125,14 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: Completed 06.1-04-PLAN.md (Phase 6.1 complete)
+Stopped at: Completed 06.1-05-PLAN.md (URL resolution)
 Resume file: None - Phase 6.1 complete
 
 ### Roadmap Evolution
 
 - Phase 6.1 inserted after Phase 6: UAT Gap Closure & DX Tooling (URGENT)
-  - Reason: UAT found 4 gaps - code fixes, project rename, new commands, doc updates
-  - Gaps: See 06-UAT.md for full list (fallback reason, error retry, naming, GSD integration)
+  - Reason: UAT found 4 gaps + 1 new gap - code fixes, project rename, new commands, doc updates, URL resolution
+  - Gaps: See 06-UAT.md for full list
 
 ---
-*Phase 6.1 complete - 4/4 plans complete*
+*Phase 6.1 complete - 5/5 plans complete*
