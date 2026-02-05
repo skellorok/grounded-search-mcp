@@ -1,5 +1,5 @@
 /**
- * Response formatting validation tests for gemini-search-mcp
+ * Response formatting validation tests for grounded-search-mcp
  *
  * Tests:
  * - formatErrorResponse for 401/403/429 and other status codes

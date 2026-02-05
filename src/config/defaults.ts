@@ -1,5 +1,5 @@
 /**
- * Default configuration values and constants for gemini-search-mcp
+ * Default configuration values and constants for grounded-search-mcp
  */
 
 import { type ConfigFile, ConfigFileSchema } from './types.js';

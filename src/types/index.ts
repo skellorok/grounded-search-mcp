@@ -1,5 +1,5 @@
 /**
- * Response types for the gemini-search-mcp server
+ * Response types for the grounded-search-mcp server
  */
 
 export interface SearchSource {

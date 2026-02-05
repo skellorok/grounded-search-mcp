@@ -1,5 +1,5 @@
 /**
- * auth tool for gemini-search-mcp
+ * auth tool for grounded-search-mcp
  *
  * Provides flag-based authentication management for Google OAuth:
  * - auth --status: Show authentication status

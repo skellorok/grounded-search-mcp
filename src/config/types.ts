@@ -1,5 +1,5 @@
 /**
- * Configuration types and Zod schemas for gemini-search-mcp
+ * Configuration types and Zod schemas for grounded-search-mcp
  * Provides type-safe config file validation with defaults
  */
 

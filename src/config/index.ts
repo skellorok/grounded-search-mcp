@@ -1,5 +1,5 @@
 /**
- * Config module exports for gemini-search-mcp
+ * Config module exports for grounded-search-mcp
  */
 
 // Types

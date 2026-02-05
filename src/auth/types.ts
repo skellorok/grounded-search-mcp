@@ -1,5 +1,5 @@
 /**
- * Authentication types and Zod schemas for gemini-search-mcp
+ * Authentication types and Zod schemas for grounded-search-mcp
  * Provides type-safe token storage and auth flow state management
  */
 

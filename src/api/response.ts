@@ -1,5 +1,5 @@
 /**
- * Response parsing module for gemini-search-mcp
+ * Response parsing module for grounded-search-mcp
  *
  * Parses Gemini API responses and formats results as markdown.
  * Extracts grounding metadata (sources, search queries) from responses.

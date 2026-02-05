@@ -1,5 +1,5 @@
 /**
- * Request building module for gemini-search-mcp
+ * Request building module for grounded-search-mcp
  *
  * Implements two-stage orchestration pattern that forces search grounding.
  * By including ONLY { googleSearch: {} } in tools, the model MUST search.

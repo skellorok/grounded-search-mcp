@@ -1,5 +1,5 @@
 /**
- * Search execution module for gemini-search-mcp
+ * Search execution module for grounded-search-mcp
  *
  * Implements grounded search with provider fallback.
  * Uses two-stage orchestration pattern from request.ts.

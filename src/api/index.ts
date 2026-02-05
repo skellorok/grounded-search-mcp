@@ -1,5 +1,5 @@
 /**
- * API client module for gemini-search-mcp
+ * API client module for grounded-search-mcp
  *
  * Re-exports constants, request building, response parsing, and search execution.
  */

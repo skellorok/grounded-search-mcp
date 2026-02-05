@@ -1,5 +1,5 @@
 /**
- * OAuth provider configurations for gemini-search-mcp
+ * OAuth provider configurations for grounded-search-mcp
  *
  * Contains public OAuth client credentials from Gemini CLI and OpenCode (Antigravity).
  * These are embedded in open-source code and are not secrets.

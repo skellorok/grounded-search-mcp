@@ -1,5 +1,5 @@
 /**
- * grounded_search tool for gemini-search-mcp
+ * grounded_search tool for grounded-search-mcp
  *
  * Performs Google-grounded web searches via Gemini API.
  * Returns markdown-formatted results with sources and search queries.

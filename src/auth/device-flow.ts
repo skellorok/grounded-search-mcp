@@ -1,5 +1,5 @@
 /**
- * OAuth PKCE device code flow implementation for gemini-search-mcp
+ * OAuth PKCE device code flow implementation for grounded-search-mcp
  *
  * Implements the authorization code flow with PKCE for secure OAuth
  * without client secrets being exposed in URL parameters.

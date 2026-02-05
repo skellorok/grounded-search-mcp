@@ -1,5 +1,5 @@
 /**
- * Token refresh validation tests for gemini-search-mcp
+ * Token refresh validation tests for grounded-search-mcp
  *
  * Tests:
  * - isTokenExpired() expiry detection

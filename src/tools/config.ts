@@ -1,5 +1,5 @@
 /**
- * config tool for gemini-search-mcp
+ * config tool for grounded-search-mcp
  *
  * Provides flag-based configuration management:
  * - config --show: Show all current settings

@@ -1,5 +1,5 @@
 /**
- * API constants for gemini-search-mcp
+ * API constants for grounded-search-mcp
  *
  * Provider-specific configurations, endpoints, headers, and utility functions
  * for making requests to Gemini CLI and Antigravity providers.

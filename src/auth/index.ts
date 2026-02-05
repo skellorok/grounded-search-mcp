@@ -1,5 +1,5 @@
 /**
- * Authentication module for gemini-search-mcp
+ * Authentication module for grounded-search-mcp
  *
  * Provides the main authentication API for MCP tools including:
  * - Token validation and status

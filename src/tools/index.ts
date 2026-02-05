@@ -1,5 +1,5 @@
 /**
- * Tool registration for gemini-search-mcp
+ * Tool registration for grounded-search-mcp
  */
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
