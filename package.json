@@ -1,20 +1,20 @@
 {
-	"name": "gemini-search-mcp",
+	"name": "grounded-search-mcp",
 	"version": "0.1.0",
 	"type": "module",
-	"description": "MCP server providing Google Search grounding via Gemini API",
+	"description": "MCP server providing grounded Google Search with source citations",
 	"license": "MIT",
 	"keywords": [
 		"mcp",
 		"claude",
-		"gemini",
+		"grounded-search",
 		"google-search",
-		"grounding",
+		"citations",
 		"claude-code",
 		"web-search"
 	],
 	"bin": {
-		"gemini-search-mcp": "./build/index.js"
+		"grounded-search-mcp": "./build/index.js"
 	},
 	"scripts": {
 		"dev": "tsx watch src/index.ts",
