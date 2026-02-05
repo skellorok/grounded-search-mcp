@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Core Search** - Grounded search with citations and transparency
 - [x] **Phase 5: Configuration** - Model selection, thinking levels, and user preferences
 - [x] **Phase 6: Polish & Validation** - Edge cases, error recovery, production readiness
-- [ ] **Phase 6.1: UAT Gap Closure & DX Tooling** - Code fixes, rename, new commands, doc updates (INSERTED)
+- [x] **Phase 6.1: UAT Gap Closure & DX Tooling** - Code fixes, rename, new commands, doc updates (INSERTED)
 
 ## Phase Details
 
@@ -139,10 +139,10 @@ Plans:
 | 4 | GSD integration incomplete | major | Research + features + docs |
 
 Plans:
-- [ ] 06.1-01-PLAN.md — Code fixes: fallback reason + expanded error triggers
-- [ ] 06.1-02-PLAN.md — Project rename: package.json, token-storage, LICENSE, .mcp.json
-- [ ] 06.1-03-PLAN.md — Slash commands: /grounded-search:query and /grounded-search:prep-gsd
-- [ ] 06.1-04-PLAN.md — Documentation updates: README, gsd-integration.md, source docstrings
+- [x] 06.1-01-PLAN.md — Code fixes: fallback reason + expanded error triggers
+- [x] 06.1-02-PLAN.md — Project rename: package.json, token-storage, LICENSE, .mcp.json
+- [x] 06.1-03-PLAN.md — Slash commands: /grounded-search:query and /grounded-search:prep-gsd
+- [x] 06.1-04-PLAN.md — Documentation updates: README, gsd-integration.md, source docstrings
 
 ## Progress
 
@@ -157,7 +157,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 4. Core Search | 2/2 | Complete | 2026-02-03 |
 | 5. Configuration | 1/1 | Complete | 2026-02-04 |
 | 6. Polish & Validation | 2/2 | Complete | 2026-02-04 |
-| 6.1 UAT Gap Closure & DX Tooling | 0/4 | Not Started | - |
+| 6.1 UAT Gap Closure & DX Tooling | 4/4 | Complete | 2026-02-05 |
 
 ---
 *Roadmap created: 2026-02-03*
