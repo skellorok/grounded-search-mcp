@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Core Search** - Grounded search with citations and transparency
 - [x] **Phase 5: Configuration** - Model selection, thinking levels, and user preferences
 - [x] **Phase 6: Polish & Validation** - Edge cases, error recovery, production readiness
+- [ ] **Phase 6.1: UAT Gap Closure & DX Tooling** - Code fixes, rename, new commands, doc updates (INSERTED)
 
 ## Phase Details
 
@@ -115,6 +116,34 @@ Plans:
 - [x] 06-01-PLAN.md - Validation test suite (Vitest tests for refresh, config, error handling)
 - [x] 06-02-PLAN.md - Documentation and release preparation (README, WebSearch comparison, GSD guide, license)
 
+### Phase 6.1: UAT Gap Closure & DX Tooling (INSERTED)
+**Goal**: Address all UAT gaps - code fixes, project rename, new commands, and doc updates
+**Depends on**: Phase 6 (discovered during UAT)
+**Requirements**: None (gaps discovered during validation)
+**Success Criteria** (what must be TRUE):
+  1. Fallback reason surfaced in response metadata (not just "Fallback provider used")
+  2. Non-auth errors (404, 500, timeout) trigger provider fallback
+  3. Project renamed from gemini-search-mcp to grounded-search-mcp (folder, package.json, all refs)
+  4. GSD agent resolution verified and documented accurately
+  5. `/grounded-search:prep-gsd` command exists - auto-configures GSD agents for project
+  6. `/grounded-search:query` command exists - saves search results to local files
+  7. All documentation updated with correct project name and verified GSD integration
+**Plans**: 4 plans
+
+**UAT Gaps (from 06-UAT.md):**
+| # | Gap | Severity | Category |
+|---|-----|----------|----------|
+| 6 | Fallback reason not surfaced | minor | Code fix |
+| 7 | Non-auth errors don't trigger fallback | major | Code fix |
+| 2 | Project naming (gemini → grounded) | major | Rename |
+| 4 | GSD integration incomplete | major | Research + features + docs |
+
+Plans:
+- [ ] 06.1-01-PLAN.md — Code fixes: fallback reason + expanded error triggers
+- [ ] 06.1-02-PLAN.md — Project rename: package.json, token-storage, LICENSE, .mcp.json
+- [ ] 06.1-03-PLAN.md — Slash commands: /grounded-search:query and /grounded-search:prep-gsd
+- [ ] 06.1-04-PLAN.md — Documentation updates: README, gsd-integration.md, source docstrings
+
 ## Progress
 
 **Execution Order:**
@@ -128,8 +157,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 4. Core Search | 2/2 | Complete | 2026-02-03 |
 | 5. Configuration | 1/1 | Complete | 2026-02-04 |
 | 6. Polish & Validation | 2/2 | Complete | 2026-02-04 |
+| 6.1 UAT Gap Closure & DX Tooling | 0/4 | Not Started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last revised: 2026-02-04 (Phase 6 complete - MILESTONE COMPLETE)*
+*Last revised: 2026-02-05 (Phase 6.1 inserted - UAT gaps)*
 *Total v1 requirements: 17 (17 mapped, 0 orphaned)*
