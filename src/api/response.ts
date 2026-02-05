@@ -40,6 +40,8 @@ export interface RequestMetadata {
 	responseTime?: number;
 	/** Whether fallback provider was used */
 	fallbackUsed?: boolean;
+	/** Reason why fallback was used (e.g., "429 (rate limited)") */
+	fallbackReason?: string;
 	/** Thinking level used */
 	thinkingLevel?: 'high' | 'low' | 'none';
 }
@@ -167,7 +169,11 @@ export function formatRequestDetails(metadata: RequestMetadata): string {
 	}
 
 	if (metadata.fallbackUsed) {
-		lines.push('- **Note:** Fallback provider used');
+		if (metadata.fallbackReason) {
+			lines.push(`- **Fallback:** ${metadata.fallbackReason}`);
+		} else {
+			lines.push('- **Note:** Fallback provider used');
+		}
 	}
 
 	if (metadata.responseTime !== undefined) {
