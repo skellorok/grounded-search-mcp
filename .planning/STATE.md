@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 
 ## Current Position
 
-Phase: 6 of 6 (Polish & Validation)
-Plan: 2 of 2 in current phase
-Status: PROJECT COMPLETE
-Last activity: 2026-02-04 — Completed 06-02-PLAN.md (Documentation and release preparation)
+Phase: 6.1 (UAT Gap Closure & DX Tooling) - INSERTED
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-05 - Completed 06.1-01-PLAN.md (fallback reason tracking)
 
-Progress: [██████████] 100%
+Progress: [█████████░] 96%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: ~12min
-- Total execution time: ~2.1 hours
+- Total plans completed: 11
+- Average duration: ~11min
+- Total execution time: ~2.2 hours
 
 **By Phase:**
 
@@ -33,12 +33,11 @@ Progress: [██████████] 100%
 | 04-core-search | 2 | ~8min | ~4min |
 | 05-configuration | 1 | ~10min | ~10min |
 | 06-polish-validation | 2 | ~6min | ~3min |
+| 06.1-uat-gap-closure | 1 | ~4min | ~4min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (~3min), 05-01 (~10min), 06-01 (~3min), 06-02 (~3min)
+- Last 5 plans: 05-01 (~10min), 06-01 (~3min), 06-02 (~3min), 06.1-01 (~4min)
 - Trend: Consistently fast execution
-
-*Final update - project complete*
 
 ## Accumulated Context
 
@@ -95,6 +94,9 @@ Recent decisions affecting current work:
 - [06-02]: MIT license chosen to match MCP ecosystem conventions
 - [06-02]: Generic copyright attribution (contributors) rather than specific author
 - [06-02]: Documentation links use relative paths (./docs/)
+- [06.1-01]: Fallback reason extracted from status codes and error headings
+- [06.1-01]: Any error triggers fallback (!searchResult.success), not just auth errors
+- [06.1-01]: WebSearch tip appended when both providers fail
 
 ### Pending Todos
 
@@ -109,9 +111,15 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-04
-Stopped at: Completed 06-02-PLAN.md (Documentation and release preparation)
-Resume file: None
+Last session: 2026-02-05
+Stopped at: Completed 06.1-01-PLAN.md
+Resume file: .planning/phases/06.1-uat-gap-closure/06.1-02-PLAN.md
+
+### Roadmap Evolution
+
+- Phase 6.1 inserted after Phase 6: UAT Gap Closure & DX Tooling (URGENT)
+  - Reason: UAT found 4 gaps - code fixes, project rename, new commands, doc updates
+  - Gaps: See 06-UAT.md for full list (fallback reason, error retry, naming, GSD integration)
 
 ---
-*PROJECT COMPLETE - All 6 phases executed successfully*
+*Phase 6.1 in progress - 1/4 plans complete*
