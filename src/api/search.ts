@@ -463,11 +463,61 @@ The Antigravity endpoint is currently at capacity.
 }
 
 /**
+ * Extract a concise fallback reason from an error result.
+ *
+ * Looks for:
+ * - Error heading (e.g., "## Rate Limited")
+ * - Status code (e.g., "**Status:** 429")
+ * - Returns formatted string like "429 (rate limited)" or just heading
+ */
+function extractFallbackReason(errorResult: string): string {
+	// Try to extract the heading (e.g., "## Rate Limited" -> "Rate Limited")
+	const headingMatch = errorResult.match(/^## (.+?)[\n\r]/);
+	const heading = headingMatch?.[1] ?? 'Error';
+
+	// Try to extract status code (e.g., "**Status:** 429")
+	const statusMatch = errorResult.match(/\*\*Status:\*\* (\d+)/);
+	const statusCode = statusMatch?.[1];
+
+	if (statusCode) {
+		// Format: "429 (rate limited)" or "503 (unavailable)"
+		const reasonMap: Record<string, string> = {
+			'401': 'unauthorized',
+			'403': 'forbidden',
+			'404': 'not found',
+			'429': 'rate limited',
+			'500': 'server error',
+			'503': 'unavailable',
+		};
+		const reason = reasonMap[statusCode] ?? heading.toLowerCase();
+		return `${statusCode} (${reason})`;
+	}
+
+	// Check for specific error types without status codes
+	if (heading.includes('Timeout')) {
+		return 'timeout';
+	}
+	if (heading.includes('Network')) {
+		return 'network error';
+	}
+	if (heading.includes('Unavailable') || heading.includes('capacity')) {
+		return 'capacity';
+	}
+	if (heading.includes('Authentication')) {
+		return 'authentication';
+	}
+
+	// Fallback to heading in lowercase
+	return heading.toLowerCase().replace(/\s+error$/i, '');
+}
+
+/**
  * Add request metadata to a search result.
  */
 function addMetadataToResult(
 	searchResult: SearchResultWithMetadata,
 	fallbackUsed: boolean,
+	fallbackReason?: string,
 ): string {
 	if (!searchResult.success) {
 		// For error responses, return as-is (no metadata to add)
@@ -480,6 +530,7 @@ function addMetadataToResult(
 		model: searchResult.model,
 		thinkingLevel: searchResult.thinkingLevel,
 		fallbackUsed,
+		fallbackReason,
 		responseTime: searchResult.responseTime,
 	};
 
@@ -526,7 +577,11 @@ function formatRequestDetails(metadata: RequestMetadata): string {
 	}
 
 	if (metadata.fallbackUsed) {
-		lines.push('- **Note:** Fallback provider used');
+		if (metadata.fallbackReason) {
+			lines.push(`- **Fallback:** ${metadata.fallbackReason}`);
+		} else {
+			lines.push('- **Note:** Fallback provider used');
+		}
 	}
 
 	if (metadata.responseTime !== undefined) {
@@ -570,6 +625,7 @@ export async function searchWithFallback(options: SearchOptions): Promise<string
 	];
 
 	let lastError: string | null = null;
+	let lastErrorReason: string | undefined;
 	let fallbackUsed = false;
 	const attemptedProviders: ProviderName[] = [];
 
@@ -597,9 +653,15 @@ export async function searchWithFallback(options: SearchOptions): Promise<string
 					config.verbose,
 				);
 				if (searchResult.success) {
-					return addMetadataToResult(searchResult, fallbackUsed);
+					return addMetadataToResult(
+						searchResult,
+						fallbackUsed,
+						fallbackUsed ? lastErrorReason : undefined,
+					);
 				}
+				// Any error triggers fallback - extract reason
 				lastError = searchResult.result;
+				lastErrorReason = extractFallbackReason(searchResult.result);
 				continue; // Try next provider (Gemini CLI)
 			}
 
@@ -612,13 +674,18 @@ export async function searchWithFallback(options: SearchOptions): Promise<string
 				config.verbose,
 			);
 
-			// Check if result is an auth error that should trigger fallback
-			if (searchResult.result.startsWith('## Authentication Error')) {
+			// Any error triggers fallback (not just auth errors)
+			if (!searchResult.success) {
 				lastError = searchResult.result;
+				lastErrorReason = extractFallbackReason(searchResult.result);
 				continue;
 			}
 
-			return addMetadataToResult(searchResult, fallbackUsed);
+			return addMetadataToResult(
+				searchResult,
+				fallbackUsed,
+				fallbackUsed ? lastErrorReason : undefined,
+			);
 		} catch (error) {
 			// Token refresh or other auth error - try next provider
 			const message = error instanceof Error ? error.message : 'Unknown error';
@@ -628,12 +695,13 @@ ${message}
 
 **To fix:**
 Use \`auth --login ${provider}\` to re-authenticate.`;
+			lastErrorReason = 'authentication';
 		}
 	}
 
 	// No providers available or all failed
 	if (lastError) {
-		return lastError;
+		return `${lastError}\n\n---\n\n**Tip:** Use Claude's built-in WebSearch tool as a fallback for this query.`;
 	}
 
 	return `## No Providers Available
