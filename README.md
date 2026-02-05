@@ -1,6 +1,6 @@
-# gemini-search-mcp
+# grounded-search-mcp
 
-Google Search grounding via Gemini API for Claude Code
+MCP server providing grounded Google Search with real-time results and source citations
 
 ## Overview
 
@@ -19,8 +19,8 @@ Claude Code users with a Google One AI Pro subscription who want higher quality 
 
 1. **Clone and build:**
    ```bash
-   git clone https://github.com/your-username/gemini-search-mcp
-   cd gemini-search-mcp
+   git clone https://github.com/your-username/grounded-search-mcp
+   cd grounded-search-mcp
    npm install && npm run build
    ```
 
@@ -28,9 +28,9 @@ Claude Code users with a Google One AI Pro subscription who want higher quality 
    ```json
    {
      "mcpServers": {
-       "gemini-search": {
+       "grounded-search": {
          "command": "node",
-         "args": ["/path/to/gemini-search-mcp/build/index.js"]
+         "args": ["/path/to/grounded-search-mcp/build/index.js"]
        }
      }
    }
@@ -46,13 +46,24 @@ Claude Code users with a Google One AI Pro subscription who want higher quality 
    grounded_search --query "latest TypeScript 5.8 features"
    ```
 
+## GSD Users
+
+If you use the GSD (Get Shit Done) framework:
+
+```
+/grounded-search:prep-gsd
+```
+
+This configures your GSD research agents to prefer grounded_search over WebSearch.
+See [GSD Integration Guide](./docs/gsd-integration.md) for details.
+
 ## Installation
 
 ### From GitHub
 
 ```bash
-git clone https://github.com/your-username/gemini-search-mcp
-cd gemini-search-mcp
+git clone https://github.com/your-username/grounded-search-mcp
+cd grounded-search-mcp
 npm install
 npm run build
 ```
@@ -67,9 +78,9 @@ Add to your Claude Code `.mcp.json` file. You can place this at:
 ```json
 {
   "mcpServers": {
-    "gemini-search": {
+    "grounded-search": {
       "command": "node",
-      "args": ["/absolute/path/to/gemini-search-mcp/build/index.js"]
+      "args": ["/absolute/path/to/grounded-search-mcp/build/index.js"]
     }
   }
 }
@@ -202,9 +213,9 @@ Two authentication providers are supported:
 
 **Token Storage:**
 Tokens are stored securely at:
-- Linux: `~/.config/gemini-search-mcp/`
-- macOS: `~/Library/Application Support/gemini-search-mcp/`
-- Windows: `%APPDATA%\gemini-search-mcp\`
+- Linux: `~/.config/grounded-search-mcp/`
+- macOS: `~/Library/Application Support/grounded-search-mcp/`
+- Windows: `%APPDATA%\grounded-search-mcp\`
 
 Tokens refresh automatically when expired.
 
@@ -233,8 +244,8 @@ For users of the [GSD (Get Shit Done) framework](https://github.com/anthropics/c
 
 The GSD framework uses explicit tool lists in agent frontmatter. To add grounded_search:
 
-1. Copy the agent you want to modify to a local override
-2. Add `mcp__gemini-search__grounded_search` to the tool list
+1. Copy the agent you want to modify to a project-level override
+2. Add `mcp__grounded-search__grounded_search` to the tool list
 3. Optionally add preference instructions
 
 See [GSD Integration Guide](./docs/gsd-integration.md) for complete setup instructions.
@@ -259,8 +270,8 @@ If the default provider fails (rate limit, auth error), the server automatically
 
 **Config Storage:**
 XDG-compliant paths via `env-paths` library:
-- Config: `~/.config/gemini-search-mcp/config.json`
-- Tokens: `~/.config/gemini-search-mcp/tokens.json`
+- Config: `~/.config/grounded-search-mcp/config.json`
+- Tokens: `~/.config/grounded-search-mcp/tokens.json`
 
 ## Requirements
 
