@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 ## Current Position
 
 Phase: 6.1 (UAT Gap Closure & DX Tooling)
-Plan: 5 of 5 in current phase
+Plan: 6 of 6 in current phase
 Status: Phase complete
-Last activity: 2026-02-05 - Completed 06.1-05-PLAN.md (URL resolution)
+Last activity: 2026-02-05 - Completed 06.1-06-PLAN.md (GSD guide restoration)
 
 Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: ~10min
-- Total execution time: ~2.3 hours
+- Total execution time: ~2.35 hours
 
 **By Phase:**
 
@@ -33,10 +33,10 @@ Progress: [██████████] 100%
 | 04-core-search | 2 | ~8min | ~4min |
 | 05-configuration | 1 | ~10min | ~10min |
 | 06-polish-validation | 2 | ~6min | ~3min |
-| 06.1-uat-gap-closure | 5 | ~14min | ~2.8min |
+| 06.1-uat-gap-closure | 6 | ~17min | ~2.8min |
 
 **Recent Trend:**
-- Last 5 plans: 06.1-01 (~4min), 06.1-02 (~3min), 06.1-03 (~1min), 06.1-04 (~3min), 06.1-05 (~3min)
+- Last 5 plans: 06.1-02 (~3min), 06.1-03 (~1min), 06.1-04 (~3min), 06.1-05 (~3min), 06.1-06 (~3min)
 - Trend: Consistently fast execution
 
 ## Accumulated Context
@@ -110,6 +110,9 @@ Recent decisions affecting current work:
 - [06.1-05]: 5-second timeout per URL to prevent slow responses
 - [06.1-05]: In-memory cache for resolved URLs (no TTL, session-scoped)
 - [06.1-05]: Graceful degradation: return original URL on error/timeout
+- [06.1-06]: GSD guide restored with both automated and manual instructions
+- [06.1-06]: Explanatory sections (Prerequisites, The Challenge, Maintenance) for user context
+- [06.1-06]: gsd-debugger included in agent table (was missing from 06.1-04)
 
 ### Pending Todos
 
@@ -125,7 +128,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: Completed 06.1-05-PLAN.md (URL resolution)
+Stopped at: Completed 06.1-06-PLAN.md (GSD guide restoration)
 Resume file: None - Phase 6.1 complete
 
 ### Roadmap Evolution
@@ -135,4 +138,4 @@ Resume file: None - Phase 6.1 complete
   - Gaps: See 06-UAT.md for full list
 
 ---
-*Phase 6.1 complete - 5/5 plans complete*
+*Phase 6.1 complete - 6/6 plans complete*
