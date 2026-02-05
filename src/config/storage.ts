@@ -1,5 +1,5 @@
 /**
- * Config storage for gemini-search-mcp
+ * Config storage for grounded-search-mcp
  *
  * Stores user configuration in XDG-compliant config directory
  * with atomic writes and graceful fallback on invalid config.
@@ -12,12 +12,12 @@ import { DEFAULT_CONFIG } from './defaults.js';
 import { type ConfigFile, ConfigFileSchema } from './types.js';
 
 /**
- * XDG-compliant paths for google-search-mcp
- * On Linux: ~/.config/google-search-mcp/
- * On macOS: ~/Library/Preferences/google-search-mcp/
- * On Windows: %APPDATA%/google-search-mcp/Config/
+ * XDG-compliant paths for grounded-search-mcp
+ * On Linux: ~/.config/grounded-search-mcp/
+ * On macOS: ~/Library/Application Support/grounded-search-mcp/
+ * On Windows: %APPDATA%/grounded-search-mcp/
  */
-const paths = envPaths('google-search-mcp', { suffix: '' });
+const paths = envPaths('grounded-search-mcp', { suffix: '' });
 
 /**
  * Get the path to the config.json file

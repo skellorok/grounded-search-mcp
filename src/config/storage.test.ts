@@ -1,5 +1,5 @@
 /**
- * Config storage validation tests for gemini-search-mcp
+ * Config storage validation tests for grounded-search-mcp
  *
  * Tests:
  * - loadConfig() returns defaults on missing file
@@ -184,8 +184,8 @@ describe('getConfigFilePath', () => {
 		expect(path).toMatch(/config\.json$/);
 	});
 
-	it('includes google-search-mcp directory', () => {
+	it('includes grounded-search-mcp directory', () => {
 		const path = getConfigFilePath();
-		expect(path).toContain('google-search-mcp');
+		expect(path).toContain('grounded-search-mcp');
 	});
 });
