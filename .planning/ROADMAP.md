@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Core Search** - Grounded search with citations and transparency
 - [x] **Phase 5: Configuration** - Model selection, thinking levels, and user preferences
 - [x] **Phase 6: Polish & Validation** - Edge cases, error recovery, production readiness
-- [x] **Phase 6.1: UAT Gap Closure & DX Tooling** - Code fixes, rename, new commands, doc updates (INSERTED)
+- [ ] **Phase 6.1: UAT Gap Closure & DX Tooling** - Code fixes, rename, new commands, doc updates (INSERTED)
 
 ## Phase Details
 
@@ -117,7 +117,7 @@ Plans:
 - [x] 06-02-PLAN.md - Documentation and release preparation (README, WebSearch comparison, GSD guide, license)
 
 ### Phase 6.1: UAT Gap Closure & DX Tooling (INSERTED)
-**Goal**: Address all UAT gaps - code fixes, project rename, new commands, and doc updates
+**Goal**: Address all UAT gaps - code fixes, project rename, new commands, doc updates, URL resolution
 **Depends on**: Phase 6 (discovered during UAT)
 **Requirements**: None (gaps discovered during validation)
 **Success Criteria** (what must be TRUE):
@@ -128,21 +128,27 @@ Plans:
   5. `/grounded-search:prep-gsd` command exists - auto-configures GSD agents for project
   6. `/grounded-search:query` command exists - saves search results to local files
   7. All documentation updated with correct project name and verified GSD integration
-**Plans**: 4 plans
+  8. Source URLs resolved to actual destinations (not Google redirect URLs)
+  9. GSD integration guide has both automated AND manual instructions
+**Plans**: 6 plans
 
 **UAT Gaps (from 06-UAT.md):**
 | # | Gap | Severity | Category |
 |---|-----|----------|----------|
 | 6 | Fallback reason not surfaced | minor | Code fix |
 | 7 | Non-auth errors don't trigger fallback | major | Code fix |
-| 2 | Project naming (gemini → grounded) | major | Rename |
+| 2 | Project naming (gemini -> grounded) | major | Rename |
 | 4 | GSD integration incomplete | major | Research + features + docs |
+| 10 | Source URLs are Google redirects | blocker | API workaround |
+| 9 | GSD guide missing manual instructions | major | Documentation |
 
 Plans:
 - [x] 06.1-01-PLAN.md — Code fixes: fallback reason + expanded error triggers
 - [x] 06.1-02-PLAN.md — Project rename: package.json, token-storage, LICENSE, .mcp.json
 - [x] 06.1-03-PLAN.md — Slash commands: /grounded-search:query and /grounded-search:prep-gsd
 - [x] 06.1-04-PLAN.md — Documentation updates: README, gsd-integration.md, source docstrings
+- [ ] 06.1-05-PLAN.md — URL resolution: resolve Google redirects to actual destination URLs
+- [ ] 06.1-06-PLAN.md — GSD guide restoration: merge improved + original manual instructions
 
 ## Progress
 
@@ -157,9 +163,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 4. Core Search | 2/2 | Complete | 2026-02-03 |
 | 5. Configuration | 1/1 | Complete | 2026-02-04 |
 | 6. Polish & Validation | 2/2 | Complete | 2026-02-04 |
-| 6.1 UAT Gap Closure & DX Tooling | 4/4 | Complete | 2026-02-05 |
+| 6.1 UAT Gap Closure & DX Tooling | 4/6 | In Progress | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last revised: 2026-02-05 (Phase 6.1 inserted - UAT gaps)*
+*Last revised: 2026-02-05 (Phase 6.1 extended - UAT Round 2 gaps)*
 *Total v1 requirements: 17 (17 mapped, 0 orphaned)*
