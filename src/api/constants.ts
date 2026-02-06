@@ -145,17 +145,20 @@ export const ANTIGRAVITY_CONFIG: ProviderApiConfig = {
 /**
  * Model configuration per provider.
  *
- * Antigravity: Uses gemini-3-flash with thinking support (high by default)
- * Gemini CLI: Uses gemini-2.5-flash (only model with googleSearch support on this endpoint)
+ * Both providers use gemini-2.5-flash — the only model that returns
+ * groundingMetadata (source citations) with the googleSearch tool.
+ * gemini-3-flash does not return groundingMetadata on either endpoint.
+ *
+ * @see https://github.com/NoeFabris/opencode-antigravity-auth/issues/384
  */
 export const PROVIDER_MODELS: Record<ProviderName, string> = {
-	antigravity: 'gemini-3-flash',
+	antigravity: 'gemini-2.5-flash',
 	gemini: 'gemini-2.5-flash',
 };
 
 /**
- * Thinking levels supported by Antigravity's gemini-3-flash
- * 'none' disables thinking and uses basic generation config
+ * Thinking levels — retained for API compatibility but currently a no-op.
+ * gemini-2.5-flash does not support thinkingConfig (returns 400).
  */
 export type ThinkingLevel = 'high' | 'low' | 'none';
 
@@ -165,16 +168,17 @@ export type ThinkingLevel = 'high' | 'low' | 'none';
 export type ApiThinkingLevel = 'high' | 'low';
 
 /**
- * Default thinking level for Antigravity (matches OpenCode default)
+ * Default thinking level (no-op — neither provider supports thinking)
  */
 export const DEFAULT_THINKING_LEVEL: ApiThinkingLevel = 'high';
 
 /**
- * Whether thinking is supported per provider
+ * Whether thinking is supported per provider.
+ * gemini-2.5-flash does not support thinkingConfig on either endpoint.
  */
 export const PROVIDER_SUPPORTS_THINKING: Record<ProviderName, boolean> = {
-	antigravity: true,
-	gemini: false, // gemini-2.5-flash does not support thinkingConfig
+	antigravity: false,
+	gemini: false,
 };
 
 /**

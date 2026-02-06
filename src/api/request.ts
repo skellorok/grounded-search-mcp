@@ -116,9 +116,8 @@ export interface ProviderRequestConfig {
  * CRITICAL: tools array contains ONLY { googleSearch: {} }.
  * This forces the model to search - it cannot skip to training data.
  *
- * Generation config varies by provider:
- * - Antigravity: thinkingConfig with thinkingLevel (high/low)
- * - Gemini CLI: temperature=0, topP=1 (no thinking support)
+ * Generation config: temperature=0, topP=1 (both providers use gemini-2.5-flash
+ * which does not support thinkingConfig)
  */
 function buildSearchPayload(options: SearchRequestOptions, provider: ProviderName): SearchPayload {
 	const { query, thinking } = options;
@@ -186,9 +185,7 @@ export function getProviderConfig(provider: ProviderName): ProviderRequestConfig
  * - Gemini CLI: { model, project, user_prompt_id, request: { ..., session_id } }
  * - Antigravity: { project, model, userAgent, requestId, request: { ..., sessionId } }
  *
- * Model is provider-specific:
- * - Antigravity: gemini-3-flash (with thinking)
- * - Gemini CLI: gemini-2.5-flash (only model with googleSearch support)
+ * Both providers use gemini-2.5-flash (only model with googleSearch grounding support)
  */
 export function wrapProviderRequest(
 	payload: SearchPayload,

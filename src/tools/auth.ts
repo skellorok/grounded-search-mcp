@@ -210,11 +210,11 @@ Manage authentication for Google Search grounding.
 - auth --default-provider <provider>: Set default provider
 
 **Providers:**
-- **antigravity** (default): Uses gemini-3-flash with thinking support
-- **gemini** (fallback): Uses gemini-2.5-flash without thinking
+- **antigravity** (default): gemini-2.5-flash via sandbox endpoint
+- **gemini** (fallback): gemini-2.5-flash via production endpoint
 
-**Note:** Antigravity is recommended for better search quality via thinking.
-Gemini CLI serves as a fallback when Antigravity is unavailable.`;
+**Note:** Both providers use gemini-2.5-flash (only model with grounded search).
+Antigravity is recommended as the default. Gemini CLI serves as fallback.`;
 }
 
 /**

@@ -721,6 +721,6 @@ No authenticated providers are available for search.
 3. Try your search again
 
 **Provider differences:**
-- **Antigravity**: gemini-3-flash with thinking (better quality)
-- **Gemini CLI**: gemini-2.5-flash without thinking (fallback)`;
+- **Antigravity**: gemini-2.5-flash via sandbox endpoint (default)
+- **Gemini CLI**: gemini-2.5-flash via production endpoint (fallback)`;
 }

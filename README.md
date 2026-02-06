@@ -100,7 +100,7 @@ Perform Google-grounded web searches via Gemini API.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `query` | string | Yes | Search query (1-1000 characters) |
-| `thinking` | enum | No | Thinking level: `high`, `low`, or `none`. Controls Gemini's reasoning depth. Default: `high`. Only affects Antigravity provider. |
+| `thinking` | enum | No | Thinking level: `high`, `low`, or `none`. Default: `high`. Currently inactive (gemini-2.5-flash does not support thinkingConfig). Retained for future model support. |
 
 **Example:**
 ```
@@ -125,8 +125,7 @@ grounded_search --query "npm security vulnerabilities" --thinking high
 ## Request Details
 
 - **Provider:** Antigravity
-- **Model:** gemini-3-flash
-- **Thinking:** high
+- **Model:** gemini-2.5-flash
 - **Response time:** 2.3s
 
 ## Search Queries Used
@@ -179,7 +178,7 @@ Manage search configuration preferences.
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `defaultProvider` | `antigravity` or `gemini` | `antigravity` | Provider for searches |
-| `defaultThinking` | `high`, `low`, `none` | `high` | Thinking level for Antigravity |
+| `defaultThinking` | `high`, `low`, `none` | `high` | Thinking level (currently inactive) |
 | `includeThoughts` | boolean | `false` | Include thinking in response |
 | `timeout` | 1000-300000 | `60000` | Request timeout in ms |
 | `verbose` | boolean | `false` | Verbose output mode |
@@ -199,15 +198,13 @@ Two authentication providers are supported:
 
 ### Antigravity (Recommended)
 
-- Uses `gemini-3-flash` model with thinking support
-- Better search quality through extended reasoning
+- Uses `gemini-2.5-flash` model via sandbox endpoint
 - Default provider for new installations
 
 ### Gemini CLI
 
-- Uses `gemini-2.5-flash` model
-- Good fallback when Antigravity is unavailable
-- No thinking support
+- Uses `gemini-2.5-flash` model via production endpoint
+- Fallback when Antigravity is unavailable
 
 **Both providers use Google OAuth.** Run `auth --login <provider>` and complete the browser-based authorization flow.
 

@@ -5,8 +5,8 @@
  * Returns markdown-formatted results with sources and search queries.
  *
  * Provider differences:
- * - Antigravity (default): gemini-3-flash with thinking support
- * - Gemini CLI (fallback): gemini-2.5-flash without thinking
+ * - Antigravity (default): gemini-2.5-flash via sandbox endpoint
+ * - Gemini CLI (fallback): gemini-2.5-flash via production endpoint
  */
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -28,7 +28,7 @@ export function registerSearchTool(server: McpServer): void {
 					.enum(['high', 'low', 'none'])
 					.optional()
 					.describe(
-						'Thinking level for Antigravity provider (default: high). Ignored for Gemini CLI.',
+						'Thinking level (currently inactive — gemini-2.5-flash does not support thinkingConfig). Retained for future model support.',
 					),
 			},
 		},
