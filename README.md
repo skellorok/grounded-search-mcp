@@ -4,13 +4,18 @@ MCP server providing grounded Google Search with real-time results and source ci
 
 ## Overview
 
-This MCP server provides Google Search grounding through Gemini's API, offering an alternative to Claude's built-in WebSearch tool. Instead of Brave Search, you get Google's comprehensive search index with transparent query generation and detailed source citations.
+This MCP server provides Google Search grounding via Gemini models, using two different APIs:
+
+- **Antigravity** (default) — Uses the Cloud Code Assist sandbox API. Less restrictive rate limits, making it the preferred provider.
+- **Gemini CLI** (fallback) — Uses the production Cloud Code API. Serves as automatic fallback if Antigravity fails.
+
+Both providers use `gemini-2.5-flash` with Google's `googleSearch` tool to deliver real-time, grounded search results with source citations. If the default provider hits a rate limit or error, the server automatically falls back to the other provider — but only if you've authenticated with both.
 
 **Why grounded_search over WebSearch?**
-- **Google Search quality** - Access Google's larger, more comprehensive index
-- **Query transparency** - See the actual search queries Gemini generates
-- **Source citations** - Get deduplicated sources with URLs and domains
-- **Cost effective** - Uses your existing Google One AI Pro quota instead of per-search pricing
+- **Google Search quality** — Access Google's larger, more comprehensive index
+- **Query transparency** — See the actual search queries Gemini generates
+- **Source citations** — Get deduplicated sources with URLs and domains
+- **Cost effective** — Uses your existing Google One AI Pro quota instead of per-search pricing
 
 **Who is this for?**
 Claude Code users with a Google One AI Pro subscription who want higher quality search results and more control over web research.
@@ -36,10 +41,12 @@ Claude Code users with a Google One AI Pro subscription who want higher quality 
    }
    ```
 
-3. **Authenticate:**
+3. **Authenticate with both providers** (enables automatic fallback):
    ```
    auth --login antigravity
+   auth --login gemini
    ```
+   Each provider uses a separate Google OAuth flow — you'll complete the browser authorization twice.
 
 4. **Search:**
    ```
@@ -188,19 +195,16 @@ config --reset                                   # Reset all to defaults
 
 ## Authentication
 
-Two authentication providers are supported:
+Two providers are supported, each with its own Google OAuth endpoint. Authenticate with both to enable automatic fallback:
 
-### Antigravity (Recommended)
+```
+auth --login antigravity    # Sandbox API (default, less restrictive)
+auth --login gemini         # Production API (fallback)
+```
 
-- Uses `gemini-2.5-flash` model via sandbox endpoint
-- Default provider for new installations
+Each runs a separate browser-based OAuth flow. You'll authorize twice — once per provider.
 
-### Gemini CLI
-
-- Uses `gemini-2.5-flash` model via production endpoint
-- Fallback when Antigravity is unavailable
-
-**Both providers use Google OAuth.** Run `auth --login <provider>` and complete the browser-based authorization flow.
+**Why both?** The providers use different API endpoints with separate rate limits and quotas. If one fails (rate limit, outage), the server automatically tries the other. With only one provider authenticated, there's no fallback.
 
 **Token Storage:**
 Tokens are stored securely at:
