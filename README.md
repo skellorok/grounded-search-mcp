@@ -122,12 +122,6 @@ grounded_search --query "npm security vulnerabilities" --thinking high
 2. **[Another Source]** - docs.example.com
    https://docs.example.com/article
 
-## Request Details
-
-- **Provider:** Antigravity
-- **Model:** gemini-2.5-flash
-- **Response time:** 2.3s
-
 ## Search Queries Used
 
 1. "react server components 2024"
@@ -181,7 +175,7 @@ Manage search configuration preferences.
 | `defaultThinking` | `high`, `low`, `none` | `high` | Thinking level (currently inactive) |
 | `includeThoughts` | boolean | `false` | Include thinking in response |
 | `timeout` | 1000-300000 | `60000` | Request timeout in ms |
-| `verbose` | boolean | `false` | Verbose output mode |
+| `verbose` | boolean | `false` | Show request metadata in results |
 
 **Examples:**
 ```

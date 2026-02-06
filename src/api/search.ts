@@ -520,18 +520,34 @@ function extractFallbackReason(errorResult: string): string {
 
 /**
  * Add request metadata to a search result.
+ * When verbose=false (default), only fallback notices are shown.
+ * When verbose=true, full Request Details section is included.
  */
 function addMetadataToResult(
 	searchResult: SearchResultWithMetadata,
 	fallbackUsed: boolean,
 	fallbackReason?: string,
+	verbose = false,
 ): string {
 	if (!searchResult.success) {
 		// For error responses, return as-is (no metadata to add)
 		return searchResult.result;
 	}
 
-	// Build metadata for successful responses
+	const result = searchResult.result;
+
+	// When not verbose, only show fallback notice (actionable info)
+	if (!verbose) {
+		if (!fallbackUsed) {
+			return result;
+		}
+		const notice = fallbackReason
+			? `> **Note:** Fallback provider used (${fallbackReason})`
+			: '> **Note:** Fallback provider used';
+		return `${result}\n\n${notice}`;
+	}
+
+	// Verbose mode: full Request Details section
 	const metadata: RequestMetadata = {
 		provider: searchResult.provider,
 		model: searchResult.model,
@@ -544,7 +560,6 @@ function addMetadataToResult(
 	// Re-parse the result to add metadata
 	// Since formatSearchResult already formatted without metadata,
 	// we need to insert the Request Details section
-	const result = searchResult.result;
 	const sourcesIndex = result.indexOf('\n### Sources');
 	const queriesIndex = result.indexOf('\n### Search Queries Used');
 
@@ -664,6 +679,7 @@ export async function searchWithFallback(options: SearchOptions): Promise<string
 						searchResult,
 						fallbackUsed,
 						fallbackUsed ? lastErrorReason : undefined,
+						config.verbose,
 					);
 				}
 				// Any error triggers fallback - extract reason
@@ -692,6 +708,7 @@ export async function searchWithFallback(options: SearchOptions): Promise<string
 				searchResult,
 				fallbackUsed,
 				fallbackUsed ? lastErrorReason : undefined,
+				config.verbose,
 			);
 		} catch (error) {
 			// Token refresh or other auth error - try next provider

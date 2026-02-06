@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Real-time, grounded web search with authoritative source citations
-**Current focus:** Phase 6.1 - UAT Gap Closure
+**Current focus:** Phase 6.1 complete — all phases done
 
 ## Current Position
 
 Phase: 6.1 (UAT Gap Closure & DX Tooling)
 Plan: 6 of 6 in current phase
-Status: Phase complete
-Last activity: 2026-02-05 - Completed 06.1-06-PLAN.md (GSD guide restoration)
+Status: Phase CLOSED
+Last activity: 2026-02-06 - Grounding fix committed, UAT Test 10 verified, phase closed
 
 Progress: [██████████] 100%
 
@@ -113,6 +113,11 @@ Recent decisions affecting current work:
 - [06.1-06]: GSD guide restored with both automated and manual instructions
 - [06.1-06]: Explanatory sections (Prerequisites, The Challenge, Maintenance) for user context
 - [06.1-06]: gsd-debugger included in agent table (was missing from 06.1-04)
+- [06.1-UAT]: gemini-2.5-flash for both providers (only model returning groundingMetadata)
+- [06.1-UAT]: Thinking parameter retained but inactive (gemini-2.5-flash returns 400 with thinkingConfig)
+- [06.1-UAT]: Stale model/thinking descriptions updated across all source files and README
+- [post-06.1]: Request metadata (Request Details section) gated behind verbose flag, off by default
+- [post-06.1]: Fallback notices always shown regardless of verbose setting (actionable info)
 
 ### Pending Todos
 
@@ -128,14 +133,15 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Antigravity grounding fix implemented & verified, needs commit + UAT closure
-Resume file: .planning/phases/06.1-uat-gap-closure/.continue-here.md
+Stopped at: Phase 6.1 closed — all phases complete
+Resume file: none
 
 ### Roadmap Evolution
 
 - Phase 6.1 inserted after Phase 6: UAT Gap Closure & DX Tooling (URGENT)
   - Reason: UAT found 4 gaps + 1 new gap - code fixes, project rename, new commands, doc updates, URL resolution
   - Gaps: See 06-UAT.md for full list
+  - Status: CLOSED (2026-02-06)
 
 ---
-*Phase 6.1: 6/6 plans complete, Test 10 fix implemented — commit + UAT closure remaining*
+*All phases complete (1-6 + 6.1). Project ready for milestone review or release.*

@@ -52,7 +52,7 @@ export const CONFIG_KEYS = {
 		default: 60000,
 	},
 	verbose: {
-		description: 'Enable verbose output with response time',
+		description: 'Show request metadata (provider, model, response time) in results',
 		type: 'boolean',
 		values: [true, false] as const,
 		default: false,
