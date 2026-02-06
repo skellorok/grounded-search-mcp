@@ -5,3 +5,6 @@ grounded-search-results/
 .mcp.json
 .planning/
 custom_research/
+.env
+.env.*
+.env.local
