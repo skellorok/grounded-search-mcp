@@ -15,7 +15,7 @@ Both providers use `gemini-2.5-flash` with Google's `googleSearch` tool to deliv
 - **Google Search quality** — Access Google's larger, more comprehensive index
 - **Query transparency** — See the actual search queries Gemini generates
 - **Source citations** — Get deduplicated sources with URLs and domains
-- **Cost effective** — Uses your existing Google One AI Pro quota instead of per-search pricing
+- **Cost effective** — Uses your Google One AI Pro quota instead of Claude subscription tokens
 
 **Who is this for?**
 Claude Code users with a Google One AI Pro subscription who want higher quality search results and more control over web research.
