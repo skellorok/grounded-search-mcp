@@ -1,0 +1,7 @@
+node_modules/
+build/
+grounded-search-results/
+*.tsbuildinfo
+.mcp.json
+.planning/
+custom_research/

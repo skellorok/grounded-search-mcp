@@ -1,8 +1,0 @@
-{
-	"mcpServers": {
-		"grounded-search": {
-			"command": "node",
-			"args": ["build/index.js"]
-		}
-	}
-}
