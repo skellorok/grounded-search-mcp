@@ -11,9 +11,9 @@ Run the prep command to automatically configure your project:
 ```
 
 This checks your current configuration and offers to:
-- Create project-level agent overrides
+- Create project-level agent overrides for research and debug agents
 - Add grounded_search to tool lists
-- Add preference instructions to research agents
+- Patch web research priority instructions (accounting for Brave Search if configured)
 
 ## Prerequisites
 
@@ -105,17 +105,33 @@ The wildcard `mcp__grounded-search__*` grants access to all tools:
 - `mcp__grounded-search__auth` - Authentication management
 - `mcp__grounded-search__config` - Configuration management
 
-### 4. Add Preference Instruction
+### 4. Patch Web Research Priority
 
-Append to each agent's body:
+Each research agent has an existing inline tool priority list (typically "Context7 first → WebFetch → WebSearch"). **Replace** that section with the updated priority that includes grounded search. Do NOT just append — patch in place so there is one authoritative priority list.
+
+For research agents (phase-researcher, project-researcher):
 
 ```markdown
-## Web Research Tool Preference
+## Web Research Tool Priority
 
-For web research tasks, prefer `mcp__grounded-search__grounded_search` over `WebSearch`:
-- Better search quality via Google's grounded index
-- Query transparency shows actual searches performed
-- Fall back to WebSearch if grounded_search is unavailable or fails
+Use this order for web research:
+1. **Context7** — library/framework documentation (always try first)
+2. **WebFetch** — when you have a specific URL for official docs
+3. **mcp__grounded-search__grounded_search** — general web research (Google-grounded, shows actual queries used)
+4. **gsd-tools.cjs websearch** — Brave Search API (only if brave_search flag is enabled in init context)
+5. **WebSearch** — fallback if all above are unavailable or fail
+
+If grounded_search is unavailable (MCP server not running), skip to the next option in the priority list.
+```
+
+For the debugger (which has no existing priority section), append to the end of the body:
+
+```markdown
+## Web Research Tool Priority
+
+When investigating issues that require web research:
+1. **mcp__grounded-search__grounded_search** — preferred for general web research (Google-grounded, shows actual queries used)
+2. **WebSearch** — fallback if grounded_search is unavailable or fails
 ```
 
 ### 5. Configure MCP Server
@@ -131,21 +147,6 @@ Ensure your project's `.mcp.json` includes grounded-search:
   }
 }
 ```
-
-## Alternative: Wildcard Tool Access
-
-Instead of adding specific tools, you can give agents access to all grounded-search tools with a single wildcard:
-
-```yaml
-tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch, mcp__context7__*, mcp__grounded-search__*
-```
-
-This grants access to:
-- `mcp__grounded-search__grounded_search` - Web search with grounding
-- `mcp__grounded-search__auth` - OAuth authentication
-- `mcp__grounded-search__config` - Persistent configuration
-
-For most users, the wildcard approach is recommended as it automatically includes any new tools added in future versions.
 
 ## Project-Level Configuration
 
@@ -184,7 +185,8 @@ For teams, commit the `.claude/agents/` directory to version control:
 ```bash
 git add .claude/agents/gsd-phase-researcher.md
 git add .claude/agents/gsd-project-researcher.md
-git commit -m "chore: add grounded-search to research agents"
+git add .claude/agents/gsd-debugger.md
+git commit -m "chore: add grounded-search to research and debug agents"
 ```
 
 This ensures all team members get the same agent configuration automatically.
@@ -228,25 +230,19 @@ If you see authentication errors:
 
 ## Maintenance Considerations
 
-**GSD agents update frequently.** Your local overrides won't receive upstream improvements automatically.
+**GSD agents update frequently.** Your project-level overrides won't receive upstream improvements automatically. When GSD updates, the user-level agents (`~/.claude/agents/`) change but your project-level copies (`.claude/agents/`) stay as they were.
 
 **Recommended approach:**
 
-1. Keep a diff of your modifications (or use project-level overrides)
-2. Periodically check GSD releases for agent updates
-3. Re-apply your tool list modifications to updated agents
-4. Consider contributing a grounded_search integration to GSD upstream
+1. After GSD updates, re-run `/grounded-search:prep-gsd` to detect drift
+2. If drift is detected, re-copy the updated agents and re-apply modifications
+3. The prep command is idempotent — safe to run anytime
 
-**Minimal override strategy:**
+**What to watch for:**
 
-To minimize maintenance burden, only modify the tool list line. The rest of the agent can remain unchanged:
-
-```diff
-- tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch, mcp__context7__*
-+ tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch, mcp__context7__*, mcp__grounded-search__*
-```
-
-This single-line change is easy to re-apply after GSD updates.
+- New tools added to research agents upstream (you'll want those too)
+- Changes to the Brave Search integration (`brave_search` flag behavior)
+- New research-capable agents added to GSD that could benefit from grounded search
 
 ## Complete Override Example
 
@@ -261,16 +257,22 @@ tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch, mcp__context7__*, mcp
 
 [Original agent body content here - copy from ~/.claude/agents/gsd-phase-researcher.md]
 
-## Web Research Tool Preference
+[Find and REPLACE the existing tool priority section with:]
 
-For web research tasks, prefer `mcp__grounded-search__grounded_search` over `WebSearch`:
-- Better search quality via Google's grounded index
-- Query transparency shows actual searches performed
-- Fall back to WebSearch if grounded_search is unavailable or fails
+## Web Research Tool Priority
+
+Use this order for web research:
+1. **Context7** — library/framework documentation (always try first)
+2. **WebFetch** — when you have a specific URL for official docs
+3. **mcp__grounded-search__grounded_search** — general web research (Google-grounded, shows actual queries used)
+4. **gsd-tools.cjs websearch** — Brave Search API (only if brave_search flag is enabled in init context)
+5. **WebSearch** — fallback if all above are unavailable or fail
+
+If grounded_search is unavailable (MCP server not running), skip to the next option in the priority list.
 ```
 
 The key changes from the original:
 1. Added `mcp__grounded-search__*` to the tools list
-2. Added the "Web Research Tool Preference" section at the end
+2. Replaced the inline tool priority section with one that includes grounded search and Brave Search
 
-Everything else can remain identical to the upstream GSD agent.
+Everything else should remain identical to the upstream GSD agent.
